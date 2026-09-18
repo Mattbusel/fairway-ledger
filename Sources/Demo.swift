@@ -75,6 +75,7 @@ enum Demo {
                 let x = Double.random(in: 0...1, using: &rng)
                 h.score = par + (x < 0.1 ? -1 : x < 0.45 - skill * 0.2 ? 0 : x < 0.88 ? 1 : 2)
                 h.putts = h.score < par ? 1 : (Double.random(in: 0...1, using: &rng) < 0.12 + skill * 0.06 ? 3 : 2)
+                if h.score == par && Double.random(in: 0...1, using: &rng) < 0.35 { h.putts = 1 }
                 h.putts = min(h.putts, h.score)
                 if par > 3 {
                     let f = Double.random(in: 0...1, using: &rng)

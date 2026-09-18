@@ -105,10 +105,11 @@ struct TallyButton: View {
             VStack(spacing: 4) {
                 Text("\(count)")
                     .font(.figure(30, .regular))
+                    .lineLimit(1).minimumScaleFactor(0.5)
                     .foregroundStyle(count > 0 ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.faint))
                     .contentTransition(.numericText())
                     .scaleEffect(pop ? 1.25 : 1)
-                Text(label).font(.body(13, .semibold)).foregroundStyle(Gold.ivory.opacity(0.9))
+                Text(label).font(.body(13, .semibold)).foregroundStyle(Gold.ivory.opacity(0.9)).lineLimit(1).minimumScaleFactor(0.7)
                 if let sub { Text(sub).font(.body(10.5, .medium)).foregroundStyle(Gold.muted) }
             }
             .frame(maxWidth: .infinity).frame(height: tall)

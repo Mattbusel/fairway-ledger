@@ -133,7 +133,7 @@ struct LiveSessionView: View {
             }
         } else {
             VStack(alignment: .leading, spacing: 14) {
-                if !kind.isShortGame || kind == .onCourse {
+                if kind == .fullSwing || kind == .onCourse {
                     Eyebrow("Club")
                     ChipRow(options: ledger.bag.map(\.name), selection: $club) { $0 }
                         .padding(.horizontal, -20)
@@ -208,7 +208,7 @@ struct LiveSessionView: View {
             }
 
             TallyButton(label: kind.isShortGame ? "Inside the circle" : "On target", sub: kind.isShortGame ? "finished within 3 ft" : "inside your window",
-                        count: b.onTarget, tone: Gold.good, tall: 72) {
+                        count: b.onTarget, tone: Gold.good, tall: 84) {
                 record { $0.onTarget += 1 }
             }
 
