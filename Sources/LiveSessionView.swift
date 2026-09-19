@@ -69,6 +69,27 @@ struct LiveSessionView: View {
             Button("Discard session", role: .destructive) { dismiss() }
             Button("Keep going", role: .cancel) {}
         }
+        .onCue(autopilot)
+    }
+
+    /// App Review recording: the same actions the buttons below perform.
+    private func autopilot(_ cue: String) {
+        switch cue {
+        case "live.pure": record { $0.contact[.pure, default: 0] += 1 }
+        case "live.solid": record { $0.contact[.solid, default: 0] += 1 }
+        case "live.poor": record { $0.contact[.poor, default: 0] += 1 }
+        case "live.target": record { $0.onTarget += 1 }
+        case "live.straight": record { $0.shape[.straight, default: 0] += 1 }
+        case "live.draw": record { $0.shape[.draw, default: 0] += 1 }
+        case "live.missRight": record { $0.misses[.right, default: 0] += 1 }
+        case "live.carry": carryEntry += 2; record { $0.carries.append(carryEntry) }
+        case "live.putting": withAnimation(.snappy) { kind = .putting }
+        case "live.holed": record { $0.putts += 1; $0.onTarget += 1 }
+        case "live.puttLow": record { $0.putts += 1; $0.puttMisses[.low, default: 0] += 1 }
+        case "live.puttShort": record { $0.putts += 1; $0.puttMisses[.short, default: 0] += 1 }
+        case "live.finish": finish()
+        default: break
+        }
     }
 
     // MARK: top

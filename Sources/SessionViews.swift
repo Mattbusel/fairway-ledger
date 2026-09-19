@@ -36,6 +36,20 @@ struct FinishSessionView: View {
                 .padding(.horizontal, 20).padding(.vertical, 16)
             }
         }
+        .onCue { cue in
+            withAnimation(.snappy) {
+                switch cue {
+                case "fin.rating": session.rating = 4
+                case "fin.mood": session.mood = 4; session.energy = 4
+                case "fin.place": session.place = "Riverside range"
+                case "fin.focus": session.focus = "7 iron strike"
+                case "fin.thought": session.swingThought = "Finish tall, belt buckle to the target"
+                case "fin.workOn": session.workOn = "Short putts. Missed two inside six feet."
+                case "fin.save": ledger.upsert(session); Haptic.done(); dismiss()
+                default: break
+                }
+            }
+        }
     }
 
     private var divider: some View { Rectangle().fill(Gold.leaf.opacity(0.1)).frame(height: 0.8) }

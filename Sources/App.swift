@@ -18,7 +18,7 @@ struct FairwayLedgerApp: App {
                 .environment(router)
                 .preferredColorScheme(.dark)
                 .tint(Gold.leaf)
-                .onAppear { router.applyShotArgs(ledger) }
+                .onAppear { router.applyShotArgs(ledger); Autopilot.shared.run(router) }
         }
     }
 }

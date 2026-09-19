@@ -138,6 +138,21 @@ struct ScorecardView: View {
             }
         }
         .animation(.snappy, value: showDetails)
+        .onCue { cue in
+            withAnimation(.snappy) {
+                switch cue {
+                case "card.course": showDetails = true; round.course = "Pine Hollow"
+                case "card.closeDetails": showDetails = false
+                case "card.birdie": round.holes[hole].score = round.holes[hole].par - 1; round.holes[hole].putts = 1
+                case "card.par": round.holes[hole].putts = 2
+                case "card.bogey": round.holes[hole].score = round.holes[hole].par + 1; round.holes[hole].putts = 2
+                case "card.double": round.holes[hole].score = round.holes[hole].par + 2; round.holes[hole].putts = 3
+                case "card.next": hole = min(hole + 1, round.holes.count - 1)
+                case "card.save": ledger.upsert(round); Haptic.done(); dismiss()
+                default: break
+                }
+            }
+        }
     }
 
     private var details: some View {
