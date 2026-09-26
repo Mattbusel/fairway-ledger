@@ -69,6 +69,7 @@ struct RootView: View {
 
     var body: some View {
         @Bindable var router = router
+        @Bindable var pro = pro
         ZStack(alignment: .bottom) {
             LacquerBackground()
             Group {
