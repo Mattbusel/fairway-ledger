@@ -21,6 +21,7 @@ struct HomeView: View {
             goals
             if !ledger.rounds.isEmpty { recentRounds }
             if ledger.sessions.isEmpty && ledger.rounds.isEmpty { emptyState }
+            ProCard()
         }
     }
 

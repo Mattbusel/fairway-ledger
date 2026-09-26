@@ -3,6 +3,7 @@ import Charts
 
 struct StatsView: View {
     @Environment(Ledger.self) private var ledger
+    @Environment(Pro.self) private var pro
 
     var body: some View {
         Page {
@@ -11,17 +12,42 @@ struct StatsView: View {
                 Text("Charts appear once you have a few sessions or rounds in the ledger.")
                     .font(.display(17)).foregroundStyle(Gold.muted).card()
             }
-            if !ledger.rounds.isEmpty {
-                roundAverages
-                scoreTrend
+            // The last-ten averages are free; the stat book below them is Pro.
+            if !ledger.rounds.isEmpty { roundAverages }
+            if pro.unlocked {
+                statBook
+            } else {
+                LockedSection(reason: .stats, title: "The full stat book",
+                              pitch: "Score trend, putting against the tour, your ball flight read and where your practice time goes, all from what you have logged.") {
+                    if ledger.rounds.isEmpty && ledger.sessions.isEmpty { sampleCard } else { statBook }
+                }
             }
-            if !ledger.puttingByDistance.isEmpty { puttingChart }
-            if !ledger.allBlocks.isEmpty {
-                ballFlight
-                practiceMix
-            }
-            if !ledger.sessions.isEmpty { weekly }
+            ExportCard()
         }
+    }
+
+    @ViewBuilder private var statBook: some View {
+        if !ledger.rounds.isEmpty { scoreTrend }
+        if !ledger.puttingByDistance.isEmpty { puttingChart }
+        if !ledger.allBlocks.isEmpty {
+            ballFlight
+            practiceMix
+        }
+        if !ledger.sessions.isEmpty { weekly }
+    }
+
+    /// Something to frost when the ledger is still empty.
+    private var sampleCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Eyebrow("Score")
+            Chart(Array([94, 92, 95, 91, 90, 88, 89, 86].enumerated()), id: \.offset) { item in
+                LineMark(x: .value("Round", item.offset), y: .value("Score", item.element))
+                    .foregroundStyle(Gold.foil).interpolationMethod(.monotone)
+            }
+            .chartXAxis(.hidden).chartYAxis(.hidden)
+            .frame(height: 190)
+        }
+        .card()
     }
 
     // MARK: rounds

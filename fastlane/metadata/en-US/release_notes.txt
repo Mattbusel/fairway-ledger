@@ -1,1 +1,5 @@
-First release.
+Fairway Ledger is now free.
+
+• Practice logging, the journal, scorecards, the handicap estimate, the yardage book and goals are free forever
+• Fairway Ledger Pro is a one-time unlock: the full stat book (score trend, putting against the tour, ball flight read, practice mix) and a new spreadsheet export of your rounds and sessions
+• Already bought Fairway Ledger? Pro is unlocked for you automatically. If it is not, tap Restore on the Pro card at the bottom of the Home tab.

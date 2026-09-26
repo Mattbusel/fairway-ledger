@@ -1,4 +1,4 @@
-Fairway Ledger is a golf practice journal and stat book, finished in black and gold.
+Fairway Ledger is a golf practice journal and stat book, finished in black and gold. Free to download, free to log, with one optional Pro unlock.
 
 Log your range sessions ball by ball, write down what clicked, keep your scorecards hole by hole, and watch the numbers tell you where to practise next.
 
@@ -21,12 +21,16 @@ ROUNDS
 • Handicap Index estimate from your best rounds (World Handicap System style)
 
 STATS
-• Score trend, fairways, greens, putts, scrambling
+• Fairways, greens, putts, scrambling, three-putts and sand saves over your last ten rounds
+
+FAIRWAY LEDGER PRO (one-time purchase, no subscription)
+• Score trend across every round
 • Putts holed by distance compared with the tour
 • Strike quality, shot shape and miss direction, with a plain-English read of your pattern
 • Where your practice time goes, and minutes per week
+• Export your rounds and practice sessions as spreadsheet files
 
 YARDAGE BOOK
 • Carry and total for every club, a gapping chart that flags gaps and overlaps, and your range average next to each club
 
-Goals, a weekly practice target and streaks keep you coming back. No account, no ads, no tracking: everything stays on your phone.
+Goals, a weekly practice target and streaks keep you coming back. Practice logging, the journal, scorecards, the handicap estimate and the yardage book are free forever. Pro is one payment, never a subscription, and Family Sharing works. No account, no ads, no tracking: everything stays on your phone.

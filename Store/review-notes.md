@@ -6,6 +6,8 @@ No account, login or network connection is required.
 
 HOW TO USE: The Home tab shows a summary. Tap "Start practice" to open the live range screen: choose a practice type and club, then tap Pure / Solid / Poor and the shape and miss buttons for each ball. Tap "Finish & journal" to rate the session and write notes, then "Save to ledger". "Log round" opens a hole-by-hole scorecard; swipe between holes and tap Save. The Journal, Rounds, Stats and Bag tabs show the saved data. A new install starts empty; log one session and one round to see the stats fill in.
 
+IN-APP PURCHASE: the app is free. One non-consumable in-app purchase, "Fairway Ledger Pro" (com.mattbusel.fairwayledger.pro), unlocks the full stat book on the Stats tab (score trend, putting by distance, ball flight, practice mix, weekly minutes) and spreadsheet export. Logging, the journal, scorecards, the handicap estimate, the yardage book and the last-ten-rounds averages are free. To see the paywall: open the Stats tab and tap "See Fairway Ledger Pro", or tap the lock on the "Export the ledger" card at the bottom of the Stats tab, or tap SEE on the Pro card at the bottom of the Home tab. Restore purchase is on the paywall and on the Pro card at the bottom of the Home tab (the "Restore" link). People who bought the paid version 1.0 are unlocked automatically.
+
 PRIVACY: no data is collected. Everything is stored in a file in the app's Documents folder on the device.
 
 GUIDELINE 2.1 INFORMATION (a screen recording was sent in the App Review reply)
@@ -17,7 +19,7 @@ Fairway Ledger is a private golf practice journal and round log. Most golfers pr
 No setup, login, credentials or sample files are required. A new install starts empty. Tap "Start practice" on the Home tab, choose a practice type and club, tap Pure / Solid / Poor and the other buttons for each ball, then tap "Finish & journal" and "Save to ledger". Tap "Log round" to open the scorecard, swipe between holes, and tap Save. The Journal, Rounds, Stats and Bag tabs show the saved data. Logging one session and one round is enough to see the stats fill in.
 
 4. EXTERNAL SERVICES, TOOLS AND PLATFORMS
-None. The app makes no network requests of any kind. It uses no data providers, no authentication service, no payment processor, no AI service, no analytics, no crash reporting, no advertising SDK and no third-party frameworks. It is built only with Apple's SwiftUI, Swift Charts and Foundation. All data is saved as a JSON file in the app's own Documents folder on the device.
+None. The app makes no network requests of any kind. It uses no data providers, no authentication service, no payment processor other than Apple's In-App Purchase (StoreKit), no AI service, no analytics, no crash reporting, no advertising SDK and no third-party frameworks. It is built only with Apple's SwiftUI, Swift Charts, StoreKit and Foundation. All data is saved as a JSON file in the app's own Documents folder on the device.
 
 5. REGIONAL DIFFERENCES
 None. The app functions identically in every region. It is offline and has no region-dependent features, content or restrictions.

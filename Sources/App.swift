@@ -4,11 +4,17 @@ import SwiftUI
 struct FairwayLedgerApp: App {
     @State private var ledger: Ledger
     @State private var router = Router()
+    @State private var pro: Pro
 
     init() {
         let args = ProcessInfo.processInfo.arguments
         let demo = args.contains("-shot") || UserDefaults.standard.bool(forKey: "demoMode")
         _ledger = State(initialValue: Ledger(demo: demo))
+        // Screenshots and the review recording show Pro; the paywall and locked shots show it locked.
+        let shot = args.firstIndex(of: "-shot").flatMap { $0 + 1 < args.count ? args[$0 + 1] : nil }
+        let lockedShot = shot.map { $0.hasPrefix("paywall") || $0.hasPrefix("locked") } ?? false
+        let staged = shot != nil || args.contains("-demoAutoplay")
+        _pro = State(initialValue: staged ? Pro(forced: !lockedShot) : Pro())
     }
 
     var body: some Scene {
@@ -16,9 +22,10 @@ struct FairwayLedgerApp: App {
             RootView()
                 .environment(ledger)
                 .environment(router)
+                .environment(pro)
                 .preferredColorScheme(.dark)
                 .tint(Gold.leaf)
-                .onAppear { router.applyShotArgs(ledger); Autopilot.shared.run(router) }
+                .onAppear { router.applyShotArgs(ledger, pro); Autopilot.shared.run(router) }
         }
     }
 }
@@ -33,7 +40,8 @@ final class Router {
     var editingRound: Round?
     var viewing: PracticeSession?
 
-    func applyShotArgs(_ l: Ledger) {
+    @MainActor
+    func applyShotArgs(_ l: Ledger, _ pro: Pro) {
         let a = ProcessInfo.processInfo.arguments
         guard let i = a.firstIndex(of: "-shot"), i + 1 < a.count else { return }
         switch a[i + 1] {
@@ -47,6 +55,8 @@ final class Router {
         case "stats": tab = .stats
         case "bag": tab = .bag
         case "journal": tab = .journal
+        case "locked": tab = .stats
+        case "paywall": tab = .stats; pro.paywall = .stats
         default: break
         }
     }
@@ -55,6 +65,7 @@ final class Router {
 struct RootView: View {
     @Environment(Ledger.self) private var ledger
     @Environment(Router.self) private var router
+    @Environment(Pro.self) private var pro
 
     var body: some View {
         @Bindable var router = router
@@ -85,6 +96,7 @@ struct RootView: View {
         .fullScreenCover(item: $router.finishing) { s in FinishSessionView(session: s) }
         .fullScreenCover(item: $router.editingRound) { r in ScorecardView(round: r) }
         .sheet(item: $router.viewing) { s in SessionDetailView(session: s).presentationBackground(Gold.ink) }
+        .sheet(item: $pro.paywall) { r in PaywallView(reason: r).presentationBackground(Gold.ink) }
     }
 }
 
