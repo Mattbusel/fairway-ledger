@@ -95,6 +95,8 @@ struct Round: Codable, Identifiable, Hashable {
     var walked = true
     var mood: Int = 3
     var notes: String = ""
+    /// The saved course this round was played on. Optional: 1.1 rounds have none.
+    var courseID: UUID? = nil
 
     static let standardPars = [4, 4, 3, 5, 4, 4, 3, 4, 5, 4, 3, 4, 5, 4, 4, 3, 5, 4]
     static var standardHoles: [Hole] { standardPars.enumerated().map { Hole(id: $0.offset + 1, par: $0.element, score: $0.element) } }
@@ -115,7 +117,49 @@ struct Round: Codable, Identifiable, Hashable {
         let s = holes.filter(\.sand); return (s.filter { $0.score <= $0.par }.count, s.count)
     }
     var differential: Double { (Double(score) - rating) * 113 / Double(slope) }
+    var isNine: Bool { holes.count < 18 }
+    var holeCount: Int { holes.count }
+
+    /// A fresh card for a saved course: its pars, its rating and slope, nine or eighteen holes.
+    static func at(_ c: Course, nine: Course.Nine = .all) -> Round {
+        var r = Round()
+        r.course = c.name; r.tees = c.tees; r.rating = c.rating; r.slope = c.slope; r.courseID = c.id
+        let range = nine.range
+        r.holes = range.map { i in Hole(id: i + 1, par: c.pars[i], score: c.pars[i], fairway: c.pars[i] == 3 ? .none : .hit) }
+        if nine != .all { r.rating = (c.rating / 2 * 10).rounded() / 10 }
+        return r
+    }
+    static func nine(_ n: Course.Nine) -> Round {
+        var r = Round()
+        guard n != .all else { return r }
+        r.holes = n.range.map { i in Hole(id: i + 1, par: standardPars[i], score: standardPars[i], fairway: standardPars[i] == 3 ? .none : .hit) }
+        r.rating = 36.0
+        return r
+    }
     var toParText: String { toPar == 0 ? "E" : toPar > 0 ? "+\(toPar)" : "\(toPar)" }
+}
+
+// MARK: courses
+
+/// A course you play: its pars and stroke indexes, so a new round starts filled in.
+struct Course: Codable, Identifiable, Hashable {
+    var id = UUID()
+    var name: String
+    var tees: String = "White"
+    var rating: Double = 72.0
+    var slope: Int = 125
+    var pars: [Int] = Round.standardPars
+    /// Stroke index per hole (1 is the hardest). Optional in the file.
+    var index: [Int]? = nil
+
+    var par: Int { pars.reduce(0, +) }
+    var key: String { (name + "|" + tees).lowercased() }
+
+    enum Nine: String, CaseIterable, Identifiable {
+        case all = "18 holes", front = "Front 9", back = "Back 9"
+        var id: String { rawValue }
+        var range: Range<Int> { self == .front ? 0..<9 : self == .back ? 9..<18 : 0..<18 }
+    }
 }
 
 // MARK: bag & goals
@@ -145,9 +189,17 @@ final class Ledger {
     var bag: [Club] = Ledger.defaultBag { didSet { save() } }
     var goals: [Goal] = [] { didSet { save() } }
     var name: String = "" { didSet { save() } }
+    var courses: [Course] = [] { didSet { save() } }
+    /// A round being entered, kept so a closed app or a phone call never loses the card.
+    var draft: Round? = nil { didSet { save() } }
+    /// Called after every save: the app refreshes the widgets from it.
+    @ObservationIgnored var didSave: (() -> Void)?
 
     private struct Snapshot: Codable {
         var sessions: [PracticeSession]; var rounds: [Round]; var bag: [Club]; var goals: [Goal]; var name: String
+        // 1.2. Optional so a 1.1 file still decodes.
+        var courses: [Course]? = nil
+        var draft: Round? = nil
     }
     private var loading = false
     private let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("ledger.json")
@@ -156,14 +208,43 @@ final class Ledger {
         loading = true
         if demo { Demo.fill(self) } else if let d = try? Data(contentsOf: url), let s = try? JSONDecoder().decode(Snapshot.self, from: d) {
             sessions = s.sessions; rounds = s.rounds; bag = s.bag; goals = s.goals; name = s.name
+            courses = s.courses ?? []; draft = s.draft
         }
+        if courses.isEmpty && !rounds.isEmpty { courses = Ledger.coursesFrom(rounds) }
         loading = false
     }
 
     private func save() {
         guard !loading else { return }
-        let snap = Snapshot(sessions: sessions, rounds: rounds, bag: bag, goals: goals, name: name)
+        let snap = Snapshot(sessions: sessions, rounds: rounds, bag: bag, goals: goals, name: name, courses: courses, draft: draft)
         if let d = try? JSONEncoder().encode(snap) { try? d.write(to: url, options: .atomic) }
+        didSave?()
+    }
+
+    /// 1.1 kept no course list; build one from the rounds already logged, newest card per course.
+    static func coursesFrom(_ rounds: [Round]) -> [Course] {
+        var seen: [String: Course] = [:]
+        for r in rounds.sorted(by: { $0.date > $1.date }) where !r.course.isEmpty && r.holes.count == 18 {
+            let c = Course(name: r.course, tees: r.tees, rating: r.rating, slope: r.slope, pars: r.holes.map(\.par))
+            if seen[c.key] == nil { seen[c.key] = c }
+        }
+        return seen.values.sorted { $0.name < $1.name }
+    }
+
+    /// Keep the course list in step with a saved round: add it, or refresh its pars and rating.
+    func remember(_ r: Round) -> UUID? {
+        guard !r.course.trimmingCharacters(in: .whitespaces).isEmpty, r.holes.count == 18 else { return r.courseID }
+        let key = (r.course + "|" + r.tees).lowercased()
+        if let i = courses.firstIndex(where: { $0.id == r.courseID || $0.key == key }) {
+            var c = courses[i]
+            c.name = r.course; c.tees = r.tees; c.rating = r.rating; c.slope = r.slope; c.pars = r.holes.map(\.par)
+            if c != courses[i] { courses[i] = c }
+            return c.id
+        }
+        let c = Course(name: r.course, tees: r.tees, rating: r.rating, slope: r.slope, pars: r.holes.map(\.par))
+        courses.append(c)
+        courses.sort { $0.name < $1.name }
+        return c.id
     }
 
     func upsert(_ s: PracticeSession) {
@@ -171,6 +252,9 @@ final class Ledger {
         sessions.sort { $0.date > $1.date }
     }
     func upsert(_ r: Round) {
+        var r = r
+        r.courseID = remember(r)
+        if draft?.id == r.id { draft = nil }
         if let i = rounds.firstIndex(where: { $0.id == r.id }) { rounds[i] = r } else { rounds.insert(r, at: 0) }
         rounds.sort { $0.date > $1.date }
     }
@@ -179,12 +263,21 @@ final class Ledger {
 
     /// World Handicap style: best 8 of the last 20 differentials, fewer when there are fewer rounds.
     var handicap: Double? {
-        let diffs = rounds.prefix(20).map(\.differential).sorted()
+        // Eighteen-hole rounds only: a nine-hole card needs a partner nine to count.
+        let diffs = rounds.filter { !$0.isNine }.prefix(20).map(\.differential).sorted()
         guard diffs.count >= 3 else { return nil }
         let use: Int = switch diffs.count { case 3...5: 1; case 6...8: 2; case 9...11: 3; case 12...14: 4; case 15...16: 5; case 17...18: 6; case 19: 7; default: 8 }
         let v = diffs.prefix(use).reduce(0, +) / Double(use)
         return (v * 0.96 * 10).rounded() / 10
     }
+
+    /// Strokes you get on this card: index x slope / 113 + (rating - par), halved for nine holes.
+    func courseHandicap(_ r: Round) -> Int? {
+        guard let h = handicap else { return nil }
+        let idx = r.isNine ? h / 2 : h
+        return Int((idx * Double(r.slope) / 113 + (r.rating - Double(r.par))).rounded())
+    }
+    func net(_ r: Round) -> Int? { courseHandicap(r).map { r.score - $0 } }
 
     func minutes(inLast days: Int) -> Int {
         let from = Calendar.current.date(byAdding: .day, value: -days, to: .now)!

@@ -9,7 +9,7 @@ struct RoundsView: View {
             HStack(alignment: .bottom) {
                 PageHeader(eyebrow: "\(ledger.rounds.count) rounds", title: "Rounds")
                 Spacer()
-                Button { router.editingRound = Round() } label: {
+                Button { router.editingRound = ledger.draft ?? Round() } label: {
                     Image(systemName: "plus").font(.body(18, .semibold)).foregroundStyle(Gold.ink)
                         .frame(width: 48, height: 48).background(Circle().fill(Gold.foil))
                         .shadow(color: Gold.leaf.opacity(0.4), radius: 12)
@@ -31,8 +31,13 @@ struct RoundsView: View {
                 }
                 .frame(maxWidth: .infinity).card(padding: 26)
             }
+            if !ledger.courses.isEmpty { CourseStrip() }
             ForEach(ledger.rounds) { r in
-                Button { router.editingRound = r } label: { RoundCard(round: r) }.buttonStyle(PressStyle())
+                Button { router.editingRound = r } label: { RoundCard(round: r, net: ledger.net(r)) }.buttonStyle(PressStyle())
+                    .contextMenu {
+                        Button { router.poster = r } label: { Label("Round poster", systemImage: "photo.artframe") }
+                        Button { router.editingRound = r } label: { Label("Edit card", systemImage: "pencil") }
+                    }
             }
         }
     }
@@ -40,6 +45,7 @@ struct RoundsView: View {
 
 struct RoundCard: View {
     let round: Round
+    var net: Int? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
@@ -51,13 +57,14 @@ struct RoundCard: View {
                 Spacer()
                 VStack(alignment: .trailing, spacing: 0) {
                     Text("\(round.score)").font(.figure(40, .light)).foil()
-                    Text(round.toParText).font(.body(12, .bold)).foregroundStyle(round.toPar <= 0 ? Gold.good : Gold.muted)
+                    Text(round.toParText + (net.map { " · net \($0)" } ?? "")).font(.body(12, .bold)).foregroundStyle(round.toPar <= 0 ? Gold.good : Gold.muted)
+                    if round.isNine { Text("9 HOLES").font(.body(9, .bold)).tracking(1.2).foregroundStyle(Gold.leaf) }
                 }
             }
             MiniScorecard(holes: round.holes)
             HStack(spacing: 0) {
                 stat("FIR", "\(round.fairwaysHit)/\(round.fairwayHoles.count)")
-                stat("GIR", "\(round.girs)/18")
+                stat("GIR", "\(round.girs)/\(round.holes.count)")
                 stat("Putts", "\(round.putts)")
                 stat("Scr", "\(pct(round.scrambles.made, round.scrambles.tries))%")
             }
@@ -92,6 +99,7 @@ struct MiniScorecard: View {
 /// Hole by hole entry. One hole on screen at a time, big targets, swipe between holes.
 struct ScorecardView: View {
     @Environment(Ledger.self) private var ledger
+    @Environment(Router.self) private var router
     @Environment(\.dismiss) private var dismiss
     @State var round: Round
     @State private var hole = 0
@@ -103,7 +111,7 @@ struct ScorecardView: View {
             LacquerBackground()
             VStack(spacing: 14) {
                 HStack {
-                    Button { dismiss() } label: {
+                    Button { RoundLive.end(nil); dismiss() } label: {
                         Image(systemName: "xmark").font(.body(13, .bold)).foregroundStyle(Gold.ivory.opacity(0.7))
                             .frame(width: 36, height: 36).background(Circle().fill(Gold.lacquerHi))
                     }
@@ -117,7 +125,7 @@ struct ScorecardView: View {
                     }
                     Spacer()
                     Button {
-                        ledger.upsert(round); Haptic.done(); dismiss()
+                        ledger.upsert(round); RoundLive.end(round); Haptic.done(); dismiss()
                     } label: {
                         Text("Save").font(.body(14, .semibold)).foregroundStyle(Gold.ink)
                             .padding(.horizontal, 16).frame(height: 36).background(Capsule().fill(Gold.foil))
@@ -138,6 +146,17 @@ struct ScorecardView: View {
             }
         }
         .animation(.snappy, value: showDetails)
+        .onAppear {
+            if isNew {
+                if round.course.isEmpty && !ledger.courses.isEmpty && ledger.draft?.id != round.id { showDetails = true }
+                RoundLive.start(round, hole: hole)
+            }
+        }
+        .onChange(of: round) { _, r in
+            if isNew { ledger.draft = r }
+            RoundLive.update(r, hole: min(hole, r.holes.count - 1))
+        }
+        .onChange(of: hole) { _, h in RoundLive.update(round, hole: min(h, round.holes.count - 1)) }
         .onCue { cue in
             withAnimation(.snappy) {
                 switch cue {
@@ -148,15 +167,18 @@ struct ScorecardView: View {
                 case "card.bogey": round.holes[hole].score = round.holes[hole].par + 1; round.holes[hole].putts = 2
                 case "card.double": round.holes[hole].score = round.holes[hole].par + 2; round.holes[hole].putts = 3
                 case "card.next": hole = min(hole + 1, round.holes.count - 1)
-                case "card.save": ledger.upsert(round); Haptic.done(); dismiss()
+                case "card.save": ledger.upsert(round); RoundLive.end(round); Haptic.done(); dismiss()
                 default: break
                 }
             }
         }
     }
 
+    private var isNew: Bool { !ledger.rounds.contains { $0.id == round.id } }
+
     private var details: some View {
         VStack(spacing: 12) {
+            if isNew { CoursePicker(round: $round) }
             LedgerField(label: "Course", text: $round.course, prompt: "Course name")
             HStack(spacing: 10) {
                 LedgerField(label: "Tees", text: $round.tees, prompt: "White")
@@ -174,7 +196,17 @@ struct ScorecardView: View {
             DatePicker("Date", selection: $round.date, displayedComponents: .date)
                 .font(.body(15, .medium)).foregroundStyle(Gold.ivory).card(padding: 14, radius: 18)
             LedgerField(label: "Notes", text: $round.notes, prompt: "What decided the round?", multiline: true)
-            if ledger.rounds.contains(where: { $0.id == round.id }) {
+            if !isNew {
+                GhostButton("Make a round poster", icon: "photo.artframe") {
+                    let r = round
+                    dismiss()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { router.poster = r }
+                }
+            }
+            if isNew, ledger.draft?.id == round.id {
+                Button("Discard this card", role: .destructive) { ledger.draft = nil; RoundLive.end(nil); dismiss() }.font(.body(14, .semibold))
+            }
+            if !isNew {
                 Button("Delete round", role: .destructive) { confirmDelete = true }.font(.body(14, .semibold))
                     .confirmationDialog("Delete this round?", isPresented: $confirmDelete) {
                         Button("Delete", role: .destructive) { ledger.rounds.removeAll { $0.id == round.id }; dismiss() }
@@ -186,13 +218,17 @@ struct ScorecardView: View {
 
     private var totals: some View {
         let out = round.holes.prefix(9).reduce(0) { $0 + $1.score }
-        let inn = round.holes.suffix(9).reduce(0) { $0 + $1.score }
+        let inn = round.holes.dropFirst(9).reduce(0) { $0 + $1.score }
+        let net = ledger.net(round)
         return HStack(spacing: 0) {
-            total("Out", "\(out)")
-            total("In", "\(inn)")
+            if !round.isNine {
+                total("Out", "\(out)")
+                total("In", "\(inn)")
+            }
             total("Total", "\(round.score)", big: true)
             total("To par", round.toParText)
             total("Putts", "\(round.putts)")
+            if let net { total("Net", "\(net)") }
         }
         .padding(.vertical, 12)
         .card(padding: 4, radius: 20)

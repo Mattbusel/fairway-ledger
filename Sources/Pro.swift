@@ -117,9 +117,12 @@ final class Pro {
 
 enum ProCopy {
     static let pitch = "Logging stays free forever. Pro turns the ledger into a stat book."
-    static let short = "The full stat book and CSV export."
+    static let short = "The full stat book, course pages, the Ledger widget and CSV export."
     static let features: [(icon: String, title: String, body: String)] = [
         ("chart.line.uptrend.xyaxis", "Score trend", "Every round on one line, with your average ruled across it."),
+        ("chart.bar.xaxis", "Where the strokes go", "Over par on par 3s, 4s and 5s, penalties and three-putts, per round."),
+        ("map", "Every course, hole by hole", "How each hole plays for you, the ones that cost you, and the ones to attack."),
+        ("rectangle.3.group", "The Ledger widget", "Your last ten scores, putts, fairways and greens on the Home Screen."),
         ("flag.fill", "Putting against the tour", "Your make rate from each distance next to the tour's."),
         ("scope", "Ball flight read", "Strike, shape, mis-hits and which side you miss, in plain English."),
         ("chart.pie.fill", "Practice mix", "Where your range time goes, and minutes week by week."),

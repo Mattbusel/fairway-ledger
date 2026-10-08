@@ -4,25 +4,29 @@
 
 No account, login or network connection is required.
 
-HOW TO USE: The Home tab shows a summary. Tap "Start practice" to open the live range screen: choose a practice type and club, then tap Pure / Solid / Poor and the shape and miss buttons for each ball. Tap "Finish & journal" to rate the session and write notes, then "Save to ledger". "Log round" opens a hole-by-hole scorecard; swipe between holes and tap Save. The Journal, Rounds, Stats and Bag tabs show the saved data. A new install starts empty; log one session and one round to see the stats fill in.
+WHAT IS NEW IN 1.2: saved courses, nine-hole rounds, an autosaved card in progress, a Live Activity for the round being entered (Lock Screen and Dynamic Island), course handicap and net score, Home Screen widgets (WidgetKit extension sharing a small summary through the app group group.com.mattbusel.fairwayledger), a weekly practice plan built on the device from the user's own rounds, round posters, colour finishes with alternate app icons, and six new in-app purchases.
 
-IN-APP PURCHASE: the app is free. One non-consumable in-app purchase, "Fairway Ledger Pro" (com.mattbusel.fairwayledger.pro), unlocks the full stat book on the Stats tab (score trend, putting by distance, ball flight, practice mix, weekly minutes) and spreadsheet export. Logging, the journal, scorecards, the handicap estimate, the yardage book and the last-ten-rounds averages are free. To see the paywall: open the Stats tab and tap "See Fairway Ledger Pro", or tap the lock on the "Export the ledger" card at the bottom of the Stats tab, or tap SEE on the Pro card at the bottom of the Home tab. Restore purchase is on the paywall and on the Pro card at the bottom of the Home tab (the "Restore" link). People who bought the paid version 1.0 are unlocked automatically.
+HOW TO USE: Home has "Start practice" (live range screen: tap Pure / Solid / Poor, shape and misses per ball, then "Finish & journal") and "Log round" (hole-by-hole scorecard; the course name opens details, where a saved course or 18 / Front 9 / Back 9 can be picked; swipe between holes; Save). The Journal, Rounds, Stats and Bag tabs show the saved data. A new install starts empty; log one session and one round to see things fill in.
 
-PRIVACY: no data is collected. Everything is stored in a file in the app's Documents folder on the device.
+IN-APP PURCHASES (StoreKit 2, all optional, Restore in the Extras sheet and on the Pro card):
+- Fairway Ledger Pro (existing non-consumable): Stats tab "See Fairway Ledger Pro", the lock on a course page's hole-by-hole chart, or the Pro card at the bottom of Home.
+- Practice Plans, $0.99 consumable (3 credits): Home, "This week's plan" card. One plan a week is free ("Build it"); after that the card offers 3 more plans for $0.99. Each plan opens a session sheet and "Start this session" fills the live practice screen.
+- Round Posters, $0.99 consumable (3 credits): Rounds tab, hold a round > Round poster. The first poster is free; after that "3 posters" buys more. The poster is shared with the system share sheet.
+- Rose Gold, Platinum, Emerald and Copper finishes, $0.99 each, non-consumable: Home, "Extras" card at the bottom. A bought finish recolours the app and widgets and switches to its alternate app icon. Gold Leaf is free.
 
-GUIDELINE 2.1 INFORMATION (a screen recording was sent in the App Review reply)
+PRIVACY: no data is collected. Everything stays in the app's files on the device; the widgets read a small summary from the app group on the same device.
 
 2. PURPOSE AND TARGET AUDIENCE
-Fairway Ledger is a private golf practice journal and round log. Most golfers practise without recording anything, so they cannot tell whether they are improving or what to work on next. The app gives them a fast, one-handed way to tally each ball at the range (strike, target, shape, miss, carry), track putting make rates by distance against tour averages, journal each session with a swing thought and a "work on next" note, log rounds hole by hole, and see trends, a handicap index estimate and club carry distances over time. The audience is amateur golfers who practise regularly and want to improve deliberately. It is rated 4+.
+A private golf practice journal, scorecard and stat book for amateur golfers who want to improve deliberately. Rated 4+.
 
 3. SETUP AND ACCESS
-No setup, login, credentials or sample files are required. A new install starts empty. Tap "Start practice" on the Home tab, choose a practice type and club, tap Pure / Solid / Poor and the other buttons for each ball, then tap "Finish & journal" and "Save to ledger". Tap "Log round" to open the scorecard, swipe between holes, and tap Save. The Journal, Rounds, Stats and Bag tabs show the saved data. Logging one session and one round is enough to see the stats fill in.
+No setup, login, credentials or sample files are required.
 
 4. EXTERNAL SERVICES, TOOLS AND PLATFORMS
-None. The app makes no network requests of any kind. It uses no data providers, no authentication service, no payment processor other than Apple's In-App Purchase (StoreKit), no AI service, no analytics, no crash reporting, no advertising SDK and no third-party frameworks. It is built only with Apple's SwiftUI, Swift Charts, StoreKit and Foundation. All data is saved as a JSON file in the app's own Documents folder on the device.
+None. No network requests, analytics, advertising or third-party frameworks. Built with SwiftUI, Swift Charts, WidgetKit, ActivityKit, StoreKit 2 and Foundation.
 
 5. REGIONAL DIFFERENCES
-None. The app functions identically in every region. It is offline and has no region-dependent features, content or restrictions.
+None.
 
 6. REGULATED INDUSTRY / PROTECTED MATERIAL
-Not applicable. The app does not operate in a regulated industry. The handicap figure is the app's own estimate calculated on the device from the user's entered scores; it is not an official handicap and the app is not affiliated with any golf association. The tour putting percentages shown are general, publicly known statistics used as a reference. No course data, logos, brands or licensed material are included. All art, text and code are my own work.
+Not applicable. The handicap figure is the app's own estimate calculated on the device from the user's scores; it is not an official handicap and the app is not affiliated with any golf association. No course data, logos or licensed material are included. All art, text and code are my own work.

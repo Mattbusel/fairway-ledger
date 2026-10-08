@@ -1,36 +1,42 @@
-Fairway Ledger is a golf practice journal and stat book, finished in black and gold. Free to download, free to log, with one optional Pro unlock.
+Fairway Ledger is a golf practice journal, scorecard and stat book, finished in black and gold. Free to download, free to log, with one optional Pro unlock and no subscription.
 
-Log your range sessions ball by ball, write down what clicked, keep your scorecards hole by hole, and watch the numbers tell you where to practise next.
+Log your range sessions ball by ball, keep your scorecards hole by hole, and let the numbers tell you where to practise next.
+
+ON THE COURSE
+• Hole-by-hole scorecard: score, putts, tee shot, penalties, greenside bunkers
+• Saved courses: pars, rating and slope fill in by themselves next time
+• 18 holes, front nine or back nine
+• Your round on the Lock Screen and in the Dynamic Island: hole, thru, score to par
+• Close the app mid-round and the card waits for you
+• Greens in regulation, scrambling, sand saves and three-putts worked out for you
+• Handicap Index estimate (World Handicap System style), with your course handicap and net score on every card
 
 AT THE RANGE
-• Pick full swing, wedges, chipping, pitching, bunker, putting or on-course practice
-• Choose the club and target, then tap each shot: pure, solid or poor strike
-• Count shots on target, ball shape (hook, draw, straight, fade, slice) and misses (left, right, short, long, fat, thin, topped, shank)
-• Log carry distances and see your real average per club
-• Putting: makes and misses by distance, where you missed (low side, high side, short, long), and the tour make rate from that distance
-• Undo any tap
+• Full swing, wedges, chipping, pitching, bunker, putting or on-course practice
+• Tap each shot: pure, solid or poor; shape; on target; misses; carry distances
+• Putting makes and misses by distance, next to the tour's make rate
+• A weekly practice plan built from your own rounds: the clubs, targets and putts that cost you strokes, timed to about an hour
 
 YOUR JOURNAL
 • Rate the session, your mood and energy
-• Swing thought, what clicked, what to work on next, and free notes
-• Search every entry, filter by practice type
+• Swing thought, what clicked, what to work on next
 
-ROUNDS
-• Hole-by-hole scorecard: score, putts, tee shot, penalties, greenside bunkers
-• Greens in regulation, scrambling, sand saves and three-putts worked out for you
-• Handicap Index estimate from your best rounds (World Handicap System style)
+HOME SCREEN
+• Handicap widget: your index, last round and this week's practice
 
-STATS
-• Fairways, greens, putts, scrambling, three-putts and sand saves over your last ten rounds
-
-FAIRWAY LEDGER PRO (one-time purchase, no subscription)
+FAIRWAY LEDGER PRO (one payment, no subscription)
 • Score trend across every round
-• Putts holed by distance compared with the tour
-• Strike quality, shot shape and miss direction, with a plain-English read of your pattern
-• Where your practice time goes, and minutes per week
-• Export your rounds and practice sessions as spreadsheet files
+• Where the strokes go: over par on par 3s, 4s and 5s, penalties and three-putts per round
+• Every course, hole by hole: the holes that cost you and the ones to attack
+• Putting against the tour, ball flight read, practice mix
+• The Ledger widget: your last ten rounds, putts, fairways and greens
+• Export rounds and sessions as spreadsheet files
 
-YARDAGE BOOK
-• Carry and total for every club, a gapping chart that flags gaps and overlaps, and your range average next to each club
+EXTRAS, 99 CENTS EACH
+• Practice Plans: three more tailored sessions when the free weekly one isn't enough
+• Round Posters: three gold-leaf scorecards of your rounds to share or frame (your first is free)
+• Finishes: Rose Gold, Platinum, Emerald and Copper re-leaf the app, the widgets and the app icon
 
-Goals, a weekly practice target and streaks keep you coming back. Practice logging, the journal, scorecards, the handicap estimate and the yardage book are free forever. Pro is one payment, never a subscription, and Family Sharing works. No account, no ads, no tracking: everything stays on your phone.
+Already bought Fairway Ledger before it went free? Pro is unlocked for you automatically.
+
+No account, no ads, no tracking: everything stays on your phone.

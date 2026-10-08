@@ -1,5 +1,14 @@
-Fairway Ledger is now free.
+The biggest Fairway Ledger update yet.
 
-• Practice logging, the journal, scorecards, the handicap estimate, the yardage book and goals are free forever
-• Fairway Ledger Pro is a one-time unlock: the full stat book (score trend, putting against the tour, ball flight read, practice mix) and a new spreadsheet export of your rounds and sessions
-• Already bought Fairway Ledger? Pro is unlocked for you automatically. If it is not, tap Restore on the Pro card at the bottom of the Home tab.
+• Saved courses: pars, rating and slope fill in by themselves
+• Nine-hole rounds, front or back
+• Your round live on the Lock Screen and in the Dynamic Island
+• A card left half entered now waits for you
+• Course handicap and net score on every card
+• Handicap widget for your Home Screen
+• A free weekly practice plan built from your own numbers
+• Round posters to share (your first one is free)
+• Pro adds where your strokes go, hole-by-hole course pages and the Ledger widget
+• Four new finishes: Rose Gold, Platinum, Emerald and Copper, each with its own app icon
+
+Everything you've logged carries over.

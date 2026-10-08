@@ -1,1 +1,1 @@
-https://mattbusel.github.io/app-pages/fairway-ledger/
+https://app-pages-one.vercel.app/fairway-ledger/

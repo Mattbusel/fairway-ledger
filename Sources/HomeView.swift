@@ -14,15 +14,58 @@ struct HomeView: View {
                 FoilButton("Start practice", icon: "play.fill") {
                     router.live = PracticeSession()
                 }
-                GhostButton("Log round", icon: "flag.fill") { router.editingRound = Round() }
+                GhostButton(ledger.draft == nil ? "Log round" : "Resume", icon: "flag.fill") { router.editingRound = ledger.draft ?? Round() }
                     .frame(width: 138)
             }
+            if let d = ledger.draft { resume(d) }
+            PlanCard()
             if let last = ledger.sessions.first { lastSession(last) }
             goals
             if !ledger.rounds.isEmpty { recentRounds }
             if ledger.sessions.isEmpty && ledger.rounds.isEmpty { emptyState }
             ProCard()
+            extrasCard
         }
+    }
+
+    /// A card left half entered: pick it straight back up.
+    private func resume(_ d: Round) -> some View {
+        let played = d.holes.filter { $0.score != $0.par || $0.putts != 2 }.count
+        return Button { router.editingRound = d } label: {
+            HStack(spacing: 14) {
+                Image(systemName: "flag.and.flag.filled.crossed").font(.system(size: 22)).foil()
+                    .frame(width: 46, height: 46).background(Circle().fill(Gold.lacquerHi))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Round in progress").font(.display(18, .medium)).foregroundStyle(Gold.ivory)
+                    Text("\(d.course.isEmpty ? "Unnamed course" : d.course) · \(played) of \(d.holes.count) holes entered").font(.body(12.5)).foregroundStyle(Gold.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.body(13, .bold)).foil()
+            }
+            .card(padding: 16)
+        }
+        .buttonStyle(PressStyle())
+    }
+
+    private var extrasCard: some View {
+        Button { router.shop = true } label: {
+            HStack(spacing: 14) {
+                HStack(spacing: -10) {
+                    ForEach(Finish.all.prefix(4)) { f in
+                        Circle().fill(LinearGradient(colors: f.band, startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: 28, height: 28)
+                            .overlay(Circle().strokeBorder(Gold.ink, lineWidth: 2))
+                    }
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Extras").font(.display(18, .medium)).foregroundStyle(Gold.ivory)
+                    Text("Finishes, practice plans and round posters, 99 cents each").font(.body(12)).foregroundStyle(Gold.muted)
+                }
+                Spacer()
+                Image(systemName: "chevron.right").font(.body(13, .bold)).foil()
+            }
+            .card(padding: 16)
+        }
+        .buttonStyle(PressStyle())
     }
 
     private var greeting: String {

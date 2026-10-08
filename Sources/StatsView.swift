@@ -18,7 +18,7 @@ struct StatsView: View {
                 statBook
             } else {
                 LockedSection(reason: .stats, title: "The full stat book",
-                              pitch: "Score trend, putting against the tour, your ball flight read and where your practice time goes, all from what you have logged.") {
+                              pitch: "Score trend, where your strokes go, putting against the tour, your ball flight read and where your practice time goes, all from what you have logged.") {
                     if ledger.rounds.isEmpty && ledger.sessions.isEmpty { sampleCard } else { statBook }
                 }
             }
@@ -28,6 +28,7 @@ struct StatsView: View {
 
     @ViewBuilder private var statBook: some View {
         if !ledger.rounds.isEmpty { scoreTrend }
+        if ledger.rounds.contains(where: { !$0.isNine }) { StrokesCard() }
         if !ledger.puttingByDistance.isEmpty { puttingChart }
         if !ledger.allBlocks.isEmpty {
             ballFlight
@@ -56,7 +57,7 @@ struct StatsView: View {
         let rs = Array(ledger.rounds.prefix(10))
         let n = Double(rs.count)
         let fir = pct(rs.reduce(0) { $0 + $1.fairwaysHit }, rs.reduce(0) { $0 + $1.fairwayHoles.count })
-        let gir = pct(rs.reduce(0) { $0 + $1.girs }, rs.count * 18)
+        let gir = pct(rs.reduce(0) { $0 + $1.girs }, rs.reduce(0) { $0 + $1.holes.count })
         let putts = String(format: "%.1f", Double(rs.reduce(0) { $0 + $1.putts }) / n)
         let scr = pct(rs.reduce(0) { $0 + $1.scrambles.made }, rs.reduce(0) { $0 + $1.scrambles.tries })
         let three = String(format: "%.1f", Double(rs.reduce(0) { $0 + $1.threePutts }) / n)

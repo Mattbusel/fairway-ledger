@@ -1,1 +1,1 @@
-https://mattbusel.github.io/app-pages/fairway-ledger/privacy.html
+https://app-pages-one.vercel.app/fairway-ledger/privacy.html
