@@ -27,7 +27,10 @@ jobs:
       - name: Screenshots
         timeout-minutes: 25
         run: |
-          udid=$UDID
+          # A fresh iPhone 16 Pro Max (same 1320x2868 screen): the runner's default device and a fresh 17 Pro Max both wedged.
+          rt=$(xcrun simctl list runtimes | grep -oE "com.apple.CoreSimulator.SimRuntime.iOS-[0-9-]+" | sort -V | tail -1)
+          udid=$(xcrun simctl create shots "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro-Max" "$rt")
+          echo "UDID=$udid" >> "$GITHUB_ENV"
           xcrun simctl shutdown all || true
           xcrun simctl boot "$udid" || true
           for i in $(seq 1 60); do
@@ -41,17 +44,46 @@ jobs:
           xcrun simctl install "$udid" "$app"
           mkdir -p shots
           # A warm-up launch: the first screenshot after install can come out blank.
-          xcrun simctl launch "$udid" com.mattbusel.fairwayledger -shot home; sleep 8
+          xcrun simctl launch "$udid" com.mattbusel.fairwayledger -shot home || true
+          sleep 15
           i=0
-          for shot in home scorecard widgets plan poster rounds course stats live shop paywall locked; do
+          for shot in home challenge insights scorecard widgets plan poster rounds course stats live shop paywall plushub locked; do
             xcrun simctl terminate "$udid" com.mattbusel.fairwayledger || true
             xcrun simctl launch "$udid" com.mattbusel.fairwayledger -shot $shot
             sleep 8
             xcrun simctl io "$udid" screenshot "shots/$(printf %02d $i)-$shot.png"
+            echo "shot $shot"
             i=$((i+1))
           done
+      - name: App preview video
+        timeout-minutes: 10
+        continue-on-error: true
+        run: |
+          udid=$UDID
+          xcrun simctl terminate "$udid" com.mattbusel.fairwayledger || true
+          data=$(xcrun simctl get_app_container "$udid" com.mattbusel.fairwayledger data)
+          rm -f "$data/Documents/demo_done"
+          mkdir -p preview
+          xcrun simctl io "$udid" recordVideo --codec h264 --force preview/preview.mp4 &
+          rec=$!
+          sleep 3
+          xcrun simctl launch "$udid" com.mattbusel.fairwayledger -preview
+          for i in $(seq 1 120); do
+            [ -f "$data/Documents/demo_done" ] && break
+            sleep 0.5
+          done
+          sleep 1
+          kill -INT $rec 2>/dev/null || true
+          wait $rec 2>/dev/null || true
+          ls -la preview
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: shots
           path: shots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preview
+          path: preview
+          if-no-files-found: warn

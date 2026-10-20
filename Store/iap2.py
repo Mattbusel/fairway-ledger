@@ -1,4 +1,4 @@
-"""Minder 1.2 in-app purchases: Streak Shield and Focus Posters (consumables), the ambience pack and four eye packs.
+"""Fairway Ledger in-app purchases (99 cents): Streak Shield and Focus Posters (consumables), the ambience pack and four eye packs.
 
     python Store/iap2.py create                 make every product (idempotent): text, $0.99, all territories
     python Store/iap2.py shot <kind> <png>      review screenshot for every product of a kind (shield | posters | ambience | pack)
@@ -33,6 +33,7 @@ PRODUCTS = [
     ("finish.platinum", "NON_CONSUMABLE", "Platinum Finish", "Platinum for the app and widgets, with its icon.", "finish", FINISH_NOTE),
     ("finish.emerald", "NON_CONSUMABLE", "Emerald Finish", "Emerald for the app and widgets, with its icon.", "finish", FINISH_NOTE),
     ("finish.copper", "NON_CONSUMABLE", "Copper Finish", "Copper for the app and widgets, with its icon.", "finish", FINISH_NOTE),
+    ("finish.sapphire", "NON_CONSUMABLE", "Sapphire Finish", "Sapphire blue for the app and widgets, with its icon.", "finish", FINISH_NOTE),
 ]
 PRICE = "0.99"
 BASE = "com.mattbusel.fairwayledger."

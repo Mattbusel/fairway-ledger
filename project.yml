@@ -25,6 +25,7 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.mattbusel.fairwayledger
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
     sources:
       - path: Sources
       - path: Resources/PrivacyInfo.xcprivacy
@@ -37,7 +38,7 @@ targets:
         PRODUCT_NAME: FairwayLedger
         INFOPLIST_KEY_CFBundleDisplayName: Fairway Ledger
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: "AppIcon-RoseGold AppIcon-Platinum AppIcon-Emerald AppIcon-Copper"
+        ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: "AppIcon-RoseGold AppIcon-Platinum AppIcon-Emerald AppIcon-Copper AppIcon-Sapphire"
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS: YES
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
@@ -56,6 +57,10 @@ targets:
         UIStatusBarStyle: UIStatusBarStyleLightContent
         ITSAppUsesNonExemptEncryption: false
         NSSupportsLiveActivities: true
+        CFBundleURLTypes:
+          - CFBundleURLName: com.mattbusel.fairwayledger
+            CFBundleURLSchemes:
+              - fairwayledger
   FairwayWidgets:
     type: app-extension
     platform: iOS

@@ -1,14 +1,12 @@
-The biggest Fairway Ledger update yet.
+A bigger Fairway Ledger.
 
-• Saved courses: pars, rating and slope fill in by themselves
-• Nine-hole rounds, front or back
-• Your round live on the Lock Screen and in the Dynamic Island
-• A card left half entered now waits for you
-• Course handicap and net score on every card
-• Handicap widget for your Home Screen
-• A free weekly practice plan built from your own numbers
-• Round posters to share (your first one is free)
-• Pro adds where your strokes go, hole-by-hole course pages and the Ledger widget
-• Four new finishes: Rose Gold, Platinum, Emerald and Copper, each with its own app icon
+• Monthly challenges: a new one on the first of every month, tracked from what you log, with a medal cabinet
+• Practice widget: log 15 or 30 minutes of range time straight from the Home Screen
+• Handicap widget on the Lock Screen and in StandBy
+• Control Center buttons and Siri: "Start practice in Fairway Ledger"
+• Saved courses, nine-hole rounds and your round live on the Lock Screen
+• New: Fairway Ledger Plus, with your handicap's pace, strokes against your target handicap, every finish, monthly plans and posters, and iCloud backup
+• New Sapphire finish with its own app icon
+• Fixes and polish throughout
 
-Everything you've logged carries over.
+Everything you've logged carries over, and Pro stays exactly as it was.

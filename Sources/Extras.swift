@@ -13,6 +13,10 @@ final class Extras {
     static var allIDs: [String] { [plansID, postersID] + Finish.all.filter { $0.id != "gold" }.map { finishID($0.id) } }
 
     private(set) var owned: Set<String> = []
+    /// Plus lends every finish while it is active. Set by the app from Plus.
+    var plusActive = false {
+        didSet { if oldValue && !plusActive && !ownsFinish(Finish.current.id) { Finish.apply("gold"); WidgetCenter.shared.reloadAllTimelines() } }
+    }
     private(set) var products: [String: Product] = [:]
     var busy: String?
     var message: String?
@@ -33,6 +37,8 @@ final class Extras {
             return
         }
         owned = Set(d.stringArray(forKey: "extras.owned") ?? [])
+        // Plus's last known state, so a launch never drops a lent finish before StoreKit answers.
+        plusActive = d.bool(forKey: "fairwayledger.plus.active")
         updates = Task { [weak self] in
             for await r in Transaction.updates { await self?.handle(r) }
         }
@@ -43,7 +49,18 @@ final class Extras {
     }
 
     func price(_ id: String) -> String { products[id]?.displayPrice ?? (demo ? "$0.99" : "…") }
-    func ownsFinish(_ id: String) -> Bool { id == "gold" || owned.contains(Extras.finishID(id)) }
+    func ownsFinish(_ id: String) -> Bool { id == "gold" || plusActive || owned.contains(Extras.finishID(id)) }
+
+    /// Plus adds plans and posters at the start of each month it is active. Once per calendar month.
+    func refill() {
+        guard plusActive, !demo else { return }
+        let c = Calendar.current.dateComponents([.year, .month], from: .now)
+        let month = "\(c.year ?? 0)-\(c.month ?? 0)"
+        guard d.string(forKey: "extras.refillMonth") != month else { return }
+        d.set(month, forKey: "extras.refillMonth")
+        plans += Plus.monthlyPlans
+        posters += Plus.monthlyPosters
+    }
 
     // MARK: free allowances
 
@@ -161,6 +178,10 @@ struct ShopSheet: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 22) {
                     SheetHeader(eyebrow: "Extras", title: "Small things,\n99 cents each.") { dismiss() }.padding(.horizontal, -20)
+                    if extras.plusActive {
+                        Label("Plus is on: every finish is yours to use, and \(Plus.monthlyPlans) plans and \(Plus.monthlyPosters) posters arrive each month.", systemImage: "crown.fill")
+                            .font(.body(13, .semibold)).foregroundStyle(Gold.pale).fixedSize(horizontal: false, vertical: true)
+                    }
 
                     VStack(spacing: 0) {
                         row(icon: "list.bullet.clipboard", title: "Practice Plans, 3 for 99¢",

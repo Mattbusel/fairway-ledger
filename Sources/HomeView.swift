@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 struct HomeView: View {
     @Environment(Ledger.self) private var ledger
@@ -16,13 +17,17 @@ struct HomeView: View {
                 }
                 GhostButton(ledger.draft == nil ? "Log round" : "Resume", icon: "flag.fill") { router.editingRound = ledger.draft ?? Round() }
                     .frame(width: 138)
+                    .popoverTip(CourseTip())
             }
+            TipView(WidgetTip()).tipBackground(Gold.lacquer)
             if let d = ledger.draft { resume(d) }
+            ChallengeCard()
             PlanCard()
             if let last = ledger.sessions.first { lastSession(last) }
             goals
             if !ledger.rounds.isEmpty { recentRounds }
             if ledger.sessions.isEmpty && ledger.rounds.isEmpty { emptyState }
+            PlusCard()
             ProCard()
             extrasCard
         }
@@ -51,14 +56,14 @@ struct HomeView: View {
         Button { router.shop = true } label: {
             HStack(spacing: 14) {
                 HStack(spacing: -10) {
-                    ForEach(Finish.all.prefix(4)) { f in
+                    ForEach(Finish.all.prefix(5)) { f in
                         Circle().fill(LinearGradient(colors: f.band, startPoint: .topLeading, endPoint: .bottomTrailing)).frame(width: 28, height: 28)
                             .overlay(Circle().strokeBorder(Gold.ink, lineWidth: 2))
                     }
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Extras").font(.display(18, .medium)).foregroundStyle(Gold.ivory)
-                    Text("Finishes, practice plans and round posters, 99 cents each").font(.body(12)).foregroundStyle(Gold.muted)
+                    Text("Finishes, practice plans and round posters, 99 cents each. Plus includes every finish.").font(.body(12)).foregroundStyle(Gold.muted)
                 }
                 Spacer()
                 Image(systemName: "chevron.right").font(.body(13, .bold)).foil()
@@ -255,4 +260,18 @@ struct Monogram: View {
         .frame(width: 50, height: 50)
         .shadow(color: Gold.leaf.opacity(0.25), radius: 12)
     }
+}
+
+
+/// TipKit: the Lock Screen and Siri, which most people never find on their own.
+struct WidgetTip: Tip {
+    var title: Text { Text("Your index on the Lock Screen") }
+    var message: Text? { Text("Add the Handicap widget to your Lock Screen or Home Screen, log practice from the Practice widget, or say \"Start practice in Fairway Ledger\".") }
+    var image: Image? { Image(systemName: "lock.iphone") }
+}
+
+struct CourseTip: Tip {
+    var title: Text { Text("Saved courses") }
+    var message: Text? { Text("Tap the course name on a new card to pick a course you have played: pars, rating and slope fill in.") }
+    var image: Image? { Image(systemName: "flag.fill") }
 }

@@ -49,7 +49,7 @@ struct Finish: Identifiable, Hashable {
         Color(red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
     }
     static let all: [Finish] = [
-        Finish(id: "gold", name: "Gold Leaf", blurb: "The original. Free.", leaf: rgb(0xD4AF37), pale: rgb(0xF7E7B0), deep: rgb(0x9C7A22), bronze: rgb(0x6B4F1A),
+        Finish(id: "gold", name: "Gold Leaf", blurb: "The original, and still the classic.", leaf: rgb(0xD4AF37), pale: rgb(0xF7E7B0), deep: rgb(0x9C7A22), bronze: rgb(0x6B4F1A),
                band: [rgb(0x9E7824), rgb(0xF7E6A3), rgb(0xCCA338), rgb(0xFFF0BD), rgb(0xA88029)]),
         Finish(id: "rose", name: "Rose Gold", blurb: "Warm pink metal, clubhouse bar light.", leaf: rgb(0xDE9C86), pale: rgb(0xF8D8CC), deep: rgb(0xA8604E), bronze: rgb(0x6B3A2E),
                band: [rgb(0xA05C4A), rgb(0xF9DCD0), rgb(0xD98F78), rgb(0xFFE9E0), rgb(0xA8604E)]),
@@ -59,6 +59,8 @@ struct Finish: Identifiable, Hashable {
                band: [rgb(0x1B6E47), rgb(0xBDF2D6), rgb(0x42B47E), rgb(0xDDFBEA), rgb(0x1F7A50)]),
         Finish(id: "copper", name: "Copper", blurb: "Old pennies and a well-worn putter face.", leaf: rgb(0xD27D3E), pale: rgb(0xF6C9A2), deep: rgb(0x9A4E1E), bronze: rgb(0x5C2C10),
                band: [rgb(0x8E4518), rgb(0xF6C9A2), rgb(0xCB7436), rgb(0xFFDDBF), rgb(0x9A4E1E)]),
+        Finish(id: "sapphire", name: "Sapphire", blurb: "Deep blue, like a links at dusk.", leaf: rgb(0x6F9BEA), pale: rgb(0xD3E2FF), deep: rgb(0x2D4FA8), bronze: rgb(0x14244F),
+               band: [rgb(0x23408F), rgb(0xD3E2FF), rgb(0x5A86DC), rgb(0xE8F0FF), rgb(0x2D4FA8)]),
     ]
     /// Read once and kept: the foil is asked for on every frame.
     static var current: Finish = byID(Shared.finish)

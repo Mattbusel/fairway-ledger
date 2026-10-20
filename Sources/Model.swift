@@ -221,6 +221,58 @@ final class Ledger {
         didSave?()
     }
 
+    /// The whole ledger as the file it is saved to, for the iCloud backup.
+    func backupData() -> Data? {
+        try? JSONEncoder().encode(Snapshot(sessions: sessions, rounds: rounds, bag: bag, goals: goals, name: name, courses: courses, draft: draft))
+    }
+
+    /// Replace everything with a backup. False if the data is not a ledger.
+    @discardableResult
+    func restore(from data: Data) -> Bool {
+        guard let s = try? JSONDecoder().decode(Snapshot.self, from: data) else { return false }
+        loading = true
+        sessions = s.sessions; rounds = s.rounds; bag = s.bag; goals = s.goals; name = s.name
+        courses = s.courses ?? Ledger.coursesFrom(s.rounds); draft = s.draft
+        loading = false
+        save()
+        return true
+    }
+
+    /// Practice logged from the widget or Siri while the app was closed, waiting in the app group.
+    func ingestQuickLogs() {
+        let pending = QuickLog.take()
+        guard !pending.isEmpty else { return }
+        for q in pending {
+            var s = PracticeSession()
+            s.date = q.date; s.minutes = q.minutes; s.focus = "Quick log"
+            s.journal = "Logged from the widget or Siri."
+            sessions.append(s)
+        }
+        sessions.sort { $0.date > $1.date }
+    }
+
+    /// Handicap index after each eighteen-hole round, oldest first: the Plus trend line.
+    var handicapHistory: [(date: Date, index: Double)] {
+        let full = Array(rounds.filter { !$0.isNine }.reversed())
+        guard full.count >= 3 else { return [] }
+        // With few rounds the index is the best one or two cards, so it climbs as cards are added. Once there are
+        // enough, start the line where eight differentials count, so it shows form rather than sample size.
+        let first = full.count >= 12 ? 7 : 2
+        return (first..<full.count).compactMap { i in
+            let window = full[max(0, i - 19)...i].map(\.differential)
+            return Ledger.index(window).map { (date: full[i].date, index: $0) }
+        }
+    }
+
+    /// World Handicap style index from up to twenty differentials.
+    static func index(_ differentials: [Double]) -> Double? {
+        let diffs = differentials.sorted()
+        guard diffs.count >= 3 else { return nil }
+        let use: Int = switch diffs.count { case 3...5: 1; case 6...8: 2; case 9...11: 3; case 12...14: 4; case 15...16: 5; case 17...18: 6; case 19: 7; default: 8 }
+        let v = diffs.prefix(use).reduce(0, +) / Double(use)
+        return (v * 0.96 * 10).rounded() / 10
+    }
+
     /// 1.1 kept no course list; build one from the rounds already logged, newest card per course.
     static func coursesFrom(_ rounds: [Round]) -> [Course] {
         var seen: [String: Course] = [:]

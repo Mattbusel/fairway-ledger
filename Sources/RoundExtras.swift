@@ -158,7 +158,7 @@ struct CourseDetail: View {
                         let r = Round.at(course)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { router.editingRound = r }
                     }
-                    if pro.unlocked {
+                    if pro.has {
                         holeByHole(played)
                     } else {
                         LockedSection(reason: .stats, title: "How each hole plays for you",
@@ -259,7 +259,7 @@ struct PosterSheet: View {
                         }
                         Text("Made. Save it to Photos from the share sheet.").font(.body(12)).foregroundStyle(Gold.muted).frame(maxWidth: .infinity)
                     } else if extras.firstPosterFree || extras.posters > 0 {
-                        FoilButton(extras.firstPosterFree ? "Make it · your first is free" : "Make it · \(extras.posters) left", icon: "photo.artframe") { make() }
+                        FoilButton(extras.firstPosterFree ? "Make the poster" : "Make it · \(extras.posters) left", icon: "photo.artframe") { make() }
                     } else {
                         FoilButton(extras.busy == Extras.postersID ? "One moment" : "3 posters · \(extras.price(Extras.postersID))", icon: "plus") {
                             Task { if await extras.buy(Extras.postersID) { make() } }
@@ -366,6 +366,29 @@ struct WidgetShowcase: View {
                     Text(Date.now.formatted(.dateTime.weekday(.wide).month(.wide).day())).font(.body(17, .semibold)).foregroundStyle(.white.opacity(0.8))
                     Text("9:41").font(.system(size: 84, weight: .bold, design: .rounded)).foregroundStyle(.white.opacity(0.92))
                 }.padding(.top, 50)
+                // The Lock Screen widgets, drawn the way the Lock Screen tints them.
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle().fill(.white.opacity(0.14))
+                        Circle().trim(from: 0, to: min(1, Double(g.weekMinutes) / Double(max(1, g.weeklyTarget))) * 0.75)
+                            .stroke(.white.opacity(0.9), style: StrokeStyle(lineWidth: 4, lineCap: .round)).rotationEffect(.degrees(135)).padding(6)
+                        Text(g.handicap.map { String(format: "%.1f", $0) } ?? "–").font(.system(size: 17, weight: .semibold, design: .serif)).foregroundStyle(.white)
+                    }
+                    .frame(width: 64, height: 64)
+                    HStack(spacing: 10) {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("HANDICAP").font(.system(size: 10, weight: .semibold)).tracking(1)
+                            Text(g.handicap.map { String(format: "%.1f", $0) } ?? "–").font(.system(size: 26, weight: .semibold, design: .serif))
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            if let s = g.lastScore { Text("Last \(s) \(g.lastToPar)").font(.system(size: 12, weight: .semibold)) }
+                            Text("\(g.weekMinutes) min this week").font(.system(size: 12))
+                        }
+                    }
+                    .foregroundStyle(.white.opacity(0.92))
+                    .padding(.horizontal, 12).frame(height: 64)
+                    .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(.white.opacity(0.12)))
+                }
                 RoundLiveView(course: r.course, s: RoundLive.state(r, hole: min(11, r.holes.count - 1)))
                     .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Gold.ink.opacity(0.92)))
                     .padding(.horizontal, 14)

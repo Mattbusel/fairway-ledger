@@ -1,0 +1,59 @@
+Fairway Ledger : carnet d'entraînement, carte de score et livre de stats de golf, en noir et or. Le practice balle par balle, les cartes trou par trou, et vos chiffres vous disent quoi travailler.
+
+SUR LE PARCOURS
+• Carte trou par trou : score, putts, mise en jeu, pénalités, bunkers de green
+• Parcours enregistrés : par, course rating et slope préremplis ensuite
+• 18 trous, aller ou retour
+• Votre partie sur l'écran verrouillé et la Dynamic Island : trou, trous joués, écart au par
+• App fermée en pleine partie ? La carte vous attend
+• Greens en régulation, scrambling, sorties de bunker et trois-putts calculés
+• Index estimé (façon WHS), handicap de jeu et score net sur chaque carte
+
+AU PRACTICE
+• Grand jeu, wedges, chip, pitch, bunker, putting ou entraînement sur le parcours
+• Chaque coup d'un geste : parfait, correct ou raté ; trajectoire ; dans la cible ; manqués ; carry
+• Putts rentrés et manqués par distance, face au taux du circuit
+• Un plan hebdo tiré de vos parties : clubs, cibles et putts qui vous coûtent des coups, sur une heure environ
+
+UN NOUVEAU DÉFI CHAQUE MOIS
+• Zéro trois-putts, six greens, huit séances de practice, une carte propre et plus
+• Progression suivie d'après vos saisies, et chaque mois bouclé vaut une médaille pour la vitrine
+
+WIDGETS, COMMANDES ET SIRI
+• Widget Handicap : écran d'accueil, écran verrouillé et StandBy
+• Widget Entraînement : 15 ou 30 minutes notées d'un bouton, sans ouvrir l'app
+• Centre de contrôle : lancer un entraînement, noter une partie, ajouter du temps
+• Siri et Raccourcis (en anglais) : "Start practice in Fairway Ledger", "What's my handicap in Fairway Ledger"
+
+VOTRE CARNET
+• Note de la séance, humeur et énergie
+• Pensée de swing, ce qui a marché, quoi travailler ensuite
+
+FAIRWAY LEDGER PRO (achat unique)
+• Évolution du score sur toutes vos parties
+• Où partent les coups : au-dessus du par sur par 3, 4 et 5, pénalités et trois-putts par partie
+• Chaque parcours trou par trou : les trous qui coûtent et ceux à attaquer
+• Putting face au circuit, vol de balle, répartition du travail
+• Widget Ledger : vos dix dernières parties, putts, fairways et greens
+• Export des parties et séances en tableur
+
+FAIRWAY LEDGER PLUS (abonnement)
+• Tout Pro
+• Tendance de l'index à votre rythme : où il va si vous continuez ainsi
+• Coups face à votre objectif : estimation de ce que jeu long, approches, petit jeu et putting vous coûtent face aux golfeurs typiques du handicap visé
+• Toutes les finitions couleur et leur icône, pendant l'abonnement
+• 5 plans d'entraînement et 3 posters ajoutés chaque mois
+• Sauvegarde et restauration iCloud de tout votre carnet
+
+EXTRAS À 99 CENTS PIÈCE
+• Plans d'entraînement : trois séances sur mesure de plus
+• Posters : trois cartes de vos parties à la feuille d'or, à partager ou encadrer (premier offert)
+• Finitions : Rose Gold, Platinum, Emerald, Copper et Sapphire redorent app, widgets et icône
+
+PRIX ET CONDITIONS
+Fairway Ledger est gratuit à télécharger et à utiliser. Pro : achat unique de 4,99 $. Fairway Ledger Plus est un abonnement à renouvellement automatique : 2,99 $ par mois, ou 14,99 $ par an avec une semaine d'essai gratuite pour les nouveaux abonnés. Prix en dollars US, variables selon les pays. Paiement débité sur votre identifiant Apple à la confirmation de l'achat (annuel : à la fin de la semaine gratuite). L'abonnement se renouvelle automatiquement sauf désactivation au moins 24 heures avant la fin de la période en cours ; le renouvellement est débité dans les 24 heures qui précèdent. Gestion et résiliation à tout moment dans les réglages du compte App Store. Acheté avant le passage au gratuit ? Pro est débloqué automatiquement.
+
+Conditions d'utilisation (licence standard Apple) : https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Politique de confidentialité : https://tensorust.com/apps/fairway-ledger/privacy/
+
+Pas de compte, pas de pub, pas de pistage : tout reste sur votre téléphone, la sauvegarde Plus va seulement dans votre iCloud.

@@ -1,0 +1,1 @@
+estadística,putt,campo,recorrido,golpe,swing,green,par,birdie,hoyo,diario,stableford,prácticas,whs

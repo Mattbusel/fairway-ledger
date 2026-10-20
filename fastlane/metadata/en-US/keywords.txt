@@ -1,1 +1,1 @@
-practice,putting,stats,yardage,swing,course,round,score,tracker,net,strokes,widget,drills,green,gir
+practice,putting,stats,score,tracker,strokes,round,course,drills,swing,yardage,gir,widget,green,par

@@ -1,4 +1,4 @@
-// The four finish icons: the Fairway Ledger seal, re-leafed. Writes Resources/Assets.xcassets/AppIcon-<Name>.appiconset.
+// The finish icons: the Fairway Ledger seal, re-leafed. Writes Resources/Assets.xcassets/AppIcon-<Name>.appiconset.
 import { chromium } from "file:///C:/Users/Matthew/lastmile/node_modules/playwright/index.mjs";
 import { mkdirSync, writeFileSync } from "fs";
 
@@ -8,11 +8,15 @@ const finishes = {
   Platinum: [["#7f858f", "#f4f5f8", "#bfc4cc", "#ffffff", "#8a909a"], "201,205,212", "#1c1e22"],
   Emerald: [["#1b6e47", "#bdf2d6", "#42b47e", "#ddfbea", "#1f7a50"], "76,195,138", "#0f2a1d"],
   Copper: [["#8e4518", "#f6c9a2", "#cb7436", "#ffddbf", "#9a4e1e"], "210,125,62", "#2e1a0c"],
+  Sapphire: [["#23408f", "#d3e2ff", "#5a86dc", "#e8f0ff", "#2d4fa8"], "111,155,234", "#101a33"],
 };
+// node Store/art/icons.mjs [Name ...] renders only the named finishes.
+const only = process.argv.slice(2);
 const root = "C:/Users/Matthew/fairway-ledger/Resources/Assets.xcassets";
 const b = await chromium.launch();
 const p = await b.newPage({ viewport: { width: 1024, height: 1024 } });
 for (const [name, [band, glow, warm]] of Object.entries(finishes)) {
+  if (only.length && !only.includes(name)) continue;
   const foil = `linear-gradient(135deg,${band[0]} 0%,${band[1]} 28%,${band[2]} 50%,${band[3]} 72%,${band[4]} 100%)`;
   const lacquer = `radial-gradient(circle at 50% 0%, ${warm} 0%, #14110c 55%, #0b0a08 100%)`;
   const stops = band.map((c, i) => `<stop offset="${[0, 0.3, 0.55, 0.78, 1][i]}" stop-color="${c}"/>`).join("");

@@ -64,16 +64,17 @@ enum Demo {
         }
 
         let courses = [("Oak Hollow", "Blue", 71.8, 131), ("Pebble Creek", "White", 70.2, 124), ("Riverside Links", "White", 72.4, 128)]
-        for i in 0..<11 {
+        for i in 0..<26 {
             let c = courses[i % 3]
             var r = Round()
             r.date = daysAgo(i * 4 + 1, hour: 9)
             r.course = c.0; r.tees = c.1; r.rating = c.2; r.slope = c.3
-            let skill = 0.55 + Double(i) * 0.05
+            // Recent rounds are the better ones: the ledger shows a golfer improving.
+            let skill = 1.0 - Double(i) * 0.03
             r.holes = Round.standardPars.enumerated().map { idx, par in
                 var h = Hole(id: idx + 1, par: par, score: par)
                 let x = Double.random(in: 0...1, using: &rng)
-                h.score = par + (x < 0.1 ? -1 : x < 0.45 - skill * 0.2 ? 0 : x < 0.88 ? 1 : 2)
+                h.score = par + (x < 0.1 ? -1 : x < 0.2 + skill * 0.32 ? 0 : x < 0.88 ? 1 : 2)
                 h.putts = h.score < par ? 1 : (Double.random(in: 0...1, using: &rng) < 0.12 + skill * 0.06 ? 3 : 2)
                 if h.score == par && Double.random(in: 0...1, using: &rng) < 0.35 { h.putts = 1 }
                 h.putts = min(h.putts, h.score)
@@ -85,6 +86,8 @@ enum Demo {
                 h.sand = Double.random(in: 0...1, using: &rng) < 0.12
                 return h
             }
+            // Older cards carry a few more dropped shots, so the sample handicap comes down over the season.
+            for k in 0..<(i / 3) { r.holes[(k * 5 + i) % 18].score += 1 }
             r.notes = i == 0 ? "Played the par 5s in one under. Two doubles both came from the tee shot right: that fade again under pressure." : ""
             r.mood = [4, 3, 4, 2, 5][i % 5]
             l.rounds.append(r)

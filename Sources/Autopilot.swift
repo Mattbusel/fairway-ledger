@@ -19,8 +19,48 @@ final class Autopilot {
 
     @MainActor private func wait(_ s: Double) async { try? await Task.sleep(for: .seconds(s)) }
 
+    /// -preview: a 25-second tour on the sample ledger for the App Store app preview video.
+    static var preview: Bool { ProcessInfo.processInfo.arguments.contains("-preview") }
+
+    @MainActor
+    private func runPreview(_ router: Router) {
+        Task { @MainActor in
+            await wait(2.6)
+            router.challenge = true
+            await wait(2.4)
+            router.challenge = false
+            await wait(0.6)
+            router.live = PracticeSession()
+            await wait(1.2)
+            for c in ["live.pure", "live.solid", "live.target", "live.pure", "live.draw", "live.pure", "live.target", "live.carry"] {
+                await send(c, then: 0.32)
+            }
+            await wait(0.4)
+            await send("live.finish", then: 1.6)
+            await send("fin.rating", then: 0.5)
+            await send("fin.save", then: 1.0)
+            router.editingRound = Round()
+            await wait(1.2)
+            for c in ["card.par", "card.next", "card.birdie", "card.next", "card.bogey", "card.next", "card.par"] {
+                await send(c, then: 0.45)
+            }
+            await send("card.save", then: 1.0)
+            withAnimation { router.tab = .stats }
+            await wait(2.0)
+            router.insights = true
+            await wait(3.2)
+            router.insights = false
+            await wait(0.6)
+            withAnimation { router.showcase = true }
+            await wait(3.0)
+            let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            try? Data().write(to: docs.appendingPathComponent("demo_done"))
+        }
+    }
+
     @MainActor
     func run(_ router: Router) {
+        if Autopilot.preview, !running { running = true; runPreview(router); return }
         guard Autopilot.on, !running else { return }
         running = true
         Task { @MainActor in

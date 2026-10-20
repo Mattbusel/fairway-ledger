@@ -14,7 +14,8 @@ struct StatsView: View {
             }
             // The last-ten averages are free; the stat book below them is Pro.
             if !ledger.rounds.isEmpty { roundAverages }
-            if pro.unlocked {
+            InsightsTeaser()
+            if pro.has {
                 statBook
             } else {
                 LockedSection(reason: .stats, title: "The full stat book",

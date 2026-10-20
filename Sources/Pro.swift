@@ -16,9 +16,14 @@ final class Pro {
     /// The first build that has Pro in it. Anything earlier was sold with every feature.
     static let firstFreemiumBuild = 2
 
-    enum Reason: String, Identifiable { case stats, export, settings; var id: String { rawValue } }
+    enum Reason: String, Identifiable { case stats, export, settings, insights, backup, plus; var id: String { rawValue } }
 
     private(set) var unlocked: Bool
+    /// Fairway Ledger Plus includes everything in Pro while it is active. Set by the app from Plus; never stored,
+    /// so a lapsed subscription takes nothing that was bought.
+    var viaPlus = false
+    /// What the screens ask: Pro owned (or grandfathered), or Plus active.
+    var has: Bool { unlocked || viaPlus }
     private(set) var grandfathered = false
     private(set) var product: Product?
     var busy = false
@@ -42,7 +47,12 @@ final class Pro {
 
     var price: String { product?.displayPrice ?? "$4.99" }
 
-    func ask(_ why: Reason) { if !unlocked { paywall = why } }
+    func ask(_ why: Reason) {
+        switch why {
+        case .insights, .backup, .plus: paywall = why
+        default: if !has { paywall = why }
+        }
+    }
 
     func refresh() async {
         guard !forced else { return }
@@ -182,48 +192,180 @@ func csvRow(_ fields: [String]) -> String {
 
 // MARK: - Paywall
 
+/// One page for both ways in: Fairway Ledger Plus (monthly, or yearly with a week's free trial) and the
+/// one-time Pro unlock. It shows every term a subscription page must: price, period, trial, auto-renewal,
+/// Terms of Use, Privacy Policy, Restore Purchases and the subscription settings.
 struct PaywallView: View {
     @Environment(Pro.self) private var pro
+    @Environment(Plus.self) private var plus
     @Environment(Ledger.self) private var ledger
     @Environment(\.dismiss) private var dismiss
     let reason: Pro.Reason
     @State private var shown = false
+    @State private var choice: Choice = .yearly
+    @State private var redeem = false
+    @State private var manage = false
+
+    enum Choice: Hashable { case yearly, monthly, pro }
 
     var body: some View {
         ZStack {
             LacquerBackground()
             ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 22) {
-                    SheetHeader(eyebrow: Pro.name, title: ProCopy.headline(reason)) { dismiss() }
+                VStack(alignment: .leading, spacing: 20) {
+                    SheetHeader(eyebrow: Plus.name, title: headline) { dismiss() }
                         .padding(.horizontal, -20)
-                    Text(ProCopy.pitch).font(.body(15)).foregroundStyle(Gold.muted)
-                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Logging stays yours, whatever you choose. Plus turns the ledger into a coach; Pro is the stat book, once.")
+                        .font(.body(15)).foregroundStyle(Gold.muted).fixedSize(horizontal: false, vertical: true)
                     teaser
-                    VStack(alignment: .leading, spacing: 16) {
-                        ForEach(ProCopy.features, id: \.title) { f in feature(f.icon, f.title, f.body) }
+                    compare
+                    if pro.unlocked && !plus.active { proOwner }
+                    VStack(spacing: 10) {
+                        option(.yearly, title: "Plus Yearly", price: "\(plus.price(Plus.yearlyID)) a year",
+                               note: plus.trialText.map { "\($0) free, then \(plus.price(Plus.yearlyID)) a year" } ?? plus.yearlyPerMonth.map { "Works out at \($0) a month" },
+                               badge: plus.trialText == nil ? "Best value" : "Free trial")
+                        option(.monthly, title: "Plus Monthly", price: "\(plus.price(Plus.monthlyID)) a month", note: "Cancel any time", badge: nil)
+                        if !pro.unlocked {
+                            option(.pro, title: Pro.name, price: "\(pro.price) once", note: "The stat book only, yours for good", badge: nil)
+                        }
                     }
-                    .card()
-                    priceBlock
-                    if let m = pro.message {
+                    if let m = plus.message ?? pro.message {
                         Text(m).font(.body(13, .semibold)).foregroundStyle(Gold.pale)
                             .frame(maxWidth: .infinity).multilineTextAlignment(.center)
                     }
-                    FoilButton(pro.busy ? "One moment" : "Unlock Pro for \(pro.price)", icon: "lock.open.fill") {
-                        Task { await pro.buy() }
+                    FoilButton(busy ? "One moment" : cta, icon: choice == .pro ? "lock.open.fill" : "sparkles") {
+                        Task {
+                            switch choice {
+                            case .pro: await pro.buy()
+                            case .yearly: await plus.buy(Plus.yearlyID)
+                            case .monthly: await plus.buy(Plus.monthlyID)
+                            }
+                        }
                     }
-                    .disabled(pro.busy)
-                    HStack(spacing: 12) {
-                        GhostButton("Restore purchase", icon: "arrow.clockwise") { Task { await pro.restore() } }
-                        GhostButton("Not now") { dismiss() }.frame(width: 120)
+                    .disabled(busy || (plus.active && choice != .pro))
+                    terms
+                    HStack(spacing: 10) {
+                        GhostButton("Restore", icon: "arrow.clockwise") { Task { await plus.restore(); await pro.restore() } }
+                        GhostButton("Redeem code", icon: "giftcard") { redeem = true }
                     }
-                    Text("One payment, yours for good. No subscription. Family Sharing works. Everything you have logged stays yours, Pro or not.")
-                        .font(.body(11.5)).foregroundStyle(Gold.faint).fixedSize(horizontal: false, vertical: true)
+                    if plus.active { GhostButton("Manage subscription", icon: "gearshape") { manage = true } }
+                    HStack(spacing: 18) {
+                        Link("Terms of Use", destination: Plus.terms)
+                        Link("Privacy Policy", destination: Plus.privacy)
+                    }
+                    .font(.body(12.5, .semibold)).foregroundStyle(Gold.muted).frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal, 20).padding(.top, 22).padding(.bottom, 40)
             }
         }
-        .onAppear { withAnimation(.spring(response: 0.7, dampingFraction: 0.65).delay(0.15)) { shown = true } }
-        .onChange(of: pro.unlocked) { _, now in if now { dismiss() } }
+        .offerCodeRedemption(isPresented: $redeem) { _ in Task { await plus.refresh() } }
+        .manageSubscriptionsSheet(isPresented: $manage)
+        .task { await plus.load() }
+        .onAppear {
+            withAnimation(.spring(response: 0.7, dampingFraction: 0.65).delay(0.15)) { shown = true }
+        }
+        .onChange(of: plus.active) { _, now in if now { dismiss() } }
+        .onChange(of: pro.unlocked) { _, now in if now && choice == .pro { dismiss() } }
+    }
+
+    private var busy: Bool { pro.busy || plus.busy }
+
+    private var headline: String {
+        switch reason {
+        case .export: return "Take your ledger anywhere."
+        case .insights: return "See where your game is going."
+        case .backup: return "Keep the ledger safe in iCloud."
+        case .plus: return "A coach in your bag."
+        default: return "Read your game like a pro."
+        }
+    }
+
+    private var cta: String {
+        switch choice {
+        case .pro: return "Unlock Pro for \(pro.price)"
+        case .monthly: return plus.active ? "Plus is on" : "Subscribe for \(plus.price(Plus.monthlyID)) a month"
+        case .yearly:
+            if plus.active { return "Plus is on" }
+            return plus.trialText.map { "Start \($0) free trial" } ?? "Subscribe for \(plus.price(Plus.yearlyID)) a year"
+        }
+    }
+
+    private var terms: some View {
+        let y = plus.price(Plus.yearlyID), m = plus.price(Plus.monthlyID)
+        let trial = plus.trialText.map { " The yearly plan starts with \($0) free; you are charged \(y) when the trial ends unless you cancel before then." } ?? ""
+        return Text("Plus is an auto-renewable subscription: \(m) a month or \(y) a year.\(trial) Payment is charged to your Apple ID when you confirm the purchase. It renews automatically for the same period and price unless auto-renew is turned off at least 24 hours before the end of the current period; your account is charged for the renewal within the 24 hours before the period ends. Manage or cancel in Settings > your name > Subscriptions. Pro is a single purchase with no renewal.")
+            .font(.body(11)).foregroundStyle(Gold.faint).fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var proOwner: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Label("You own Pro. It stays yours.", systemImage: "checkmark.seal.fill").font(.body(14, .semibold)).foregroundStyle(Gold.pale)
+            Text("Plus adds the insights, every finish, iCloud backup, and new plans and posters each month, on top of everything Pro already gives you. Have an offer code? Redeem it below.")
+                .font(.body(13)).foregroundStyle(Gold.muted).fixedSize(horizontal: false, vertical: true)
+        }
+        .card()
+    }
+
+    private func option(_ c: Choice, title: String, price: String, note: String?, badge: String?) -> some View {
+        let on = choice == c
+        return Button { Haptic.tap(); withAnimation(.snappy) { choice = c } } label: {
+            HStack(spacing: 14) {
+                Image(systemName: on ? "largecircle.fill.circle" : "circle").font(.system(size: 20))
+                    .foregroundStyle(on ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.faint))
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 8) {
+                        Text(title).font(.display(18, .medium)).foregroundStyle(Gold.ivory)
+                        if let badge {
+                            Text(badge.uppercased()).font(.body(9.5, .bold)).tracking(1.2).foregroundStyle(Gold.ink)
+                                .padding(.horizontal, 7).padding(.vertical, 3).background(Capsule().fill(Gold.foil))
+                        }
+                    }
+                    if let note { Text(note).font(.body(12)).foregroundStyle(Gold.muted) }
+                }
+                Spacer(minLength: 6)
+                Text(price).font(.body(13.5, .semibold)).foregroundStyle(Gold.ivory).multilineTextAlignment(.trailing)
+            }
+            .padding(16)
+            .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Gold.lacquer))
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(on ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.leaf.opacity(0.14)), lineWidth: on ? 1.6 : 0.8))
+        }
+        .buttonStyle(PressStyle())
+        .accessibilityLabel("\(title), \(price)" + (note.map { ", \($0)" } ?? ""))
+        .accessibilityAddTraits(on ? .isSelected : [])
+    }
+
+    private var compare: some View {
+        let rows: [(String, Bool)] = [
+            ("Score trend, where the strokes go, course pages", true),
+            ("Ledger widget and spreadsheet export", true),
+            ("Handicap pace and strokes against your target", false),
+            ("Every colour finish and its app icon", false),
+            ("\(Plus.monthlyPlans) practice plans and \(Plus.monthlyPosters) posters every month", false),
+            ("iCloud backup of the whole ledger", false),
+        ]
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Spacer()
+                Text("PRO").frame(width: 46)
+                Text("PLUS").frame(width: 46)
+            }
+            .font(.body(10, .bold)).tracking(1.4).foregroundStyle(Gold.muted).padding(.bottom, 8)
+            ForEach(rows, id: \.0) { r in
+                HStack(spacing: 10) {
+                    Text(r.0).font(.body(13)).foregroundStyle(Gold.ivory.opacity(0.9)).fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 4)
+                    Image(systemName: r.1 ? "checkmark" : "minus").font(.body(12, .bold))
+                        .foregroundStyle(r.1 ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.faint)).frame(width: 46)
+                    Image(systemName: "checkmark").font(.body(12, .bold)).foil().frame(width: 46)
+                }
+                .padding(.vertical, 9)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(r.0 + (r.1 ? ", in Pro and Plus" : ", Plus only"))
+                Rectangle().fill(Gold.leaf.opacity(0.08)).frame(height: 0.8)
+            }
+        }
+        .card()
     }
 
     private var teaser: some View {
@@ -241,37 +383,11 @@ struct PaywallView: View {
             }
             .chartYScale(domain: lo...hi)
             .chartXAxis(.hidden).chartYAxis(.hidden)
-            .frame(height: 120)
+            .frame(height: 110)
             .blur(radius: 4)
-            .overlay { ProSeal(size: 84).scaleEffect(shown ? 1 : 0.3).rotationEffect(.degrees(shown ? 0 : -30)) }
+            .overlay { ProSeal(size: 80).scaleEffect(shown ? 1 : 0.3).rotationEffect(.degrees(shown ? 0 : -30)) }
         }
         .card()
-    }
-
-    private var priceBlock: some View {
-        HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(pro.price).font(.figure(40, .light)).foil()
-                Text("ONCE. NOT A MONTH.").font(.body(10.5, .semibold)).tracking(2).foregroundStyle(Gold.muted)
-            }
-            Spacer()
-            Text("No\nsubscription").font(.display(14).italic()).multilineTextAlignment(.trailing).foregroundStyle(Gold.pale)
-                .padding(.horizontal, 12).padding(.vertical, 8)
-                .overlay(RoundedRectangle(cornerRadius: 10).strokeBorder(Gold.hairline, style: StrokeStyle(lineWidth: 1, dash: [4, 3])))
-        }
-        .card()
-    }
-
-    private func feature(_ icon: String, _ title: String, _ body: String) -> some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icon).font(.body(15, .semibold)).foil()
-                .frame(width: 38, height: 38).background(Circle().fill(Gold.lacquerHi))
-                .overlay(Circle().strokeBorder(Gold.hairline, lineWidth: 0.8))
-            VStack(alignment: .leading, spacing: 3) {
-                Text(title).font(.display(18, .medium)).foregroundStyle(Gold.ivory)
-                Text(body).font(.body(13)).foregroundStyle(Gold.muted).fixedSize(horizontal: false, vertical: true)
-            }
-        }
     }
 }
 
@@ -314,8 +430,9 @@ struct LockedSection<Content: View>: View {
                 Text(title).font(.display(28)).foregroundStyle(Gold.ivory).multilineTextAlignment(.center)
                 Text(pitch).font(.body(14.5)).foregroundStyle(Gold.muted).multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                FoilButton("See \(Pro.name)", icon: "sparkles") { pro.ask(reason) }
-                Text("\(pro.price) once. Your ledger stays free.").font(.body(12)).foregroundStyle(Gold.faint)
+                FoilButton("See Plus and Pro", icon: "sparkles") { pro.ask(reason) }
+                Text("Comes with Plus, or with Pro once. Your ledger stays yours either way.").font(.body(12)).foregroundStyle(Gold.faint)
+                    .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 20).padding(.top, 60)
         }
@@ -338,7 +455,7 @@ struct ExportCard: View {
                 Text("Spreadsheet files for Numbers, Excel or Sheets").font(.body(12)).foregroundStyle(Gold.muted)
             }
             Spacer()
-            if pro.unlocked {
+            if pro.has {
                 ShareLink(items: files) {
                     Image(systemName: "square.and.arrow.up").font(.body(16, .bold)).foregroundStyle(Gold.ink)
                         .frame(width: 44, height: 44).background(Circle().fill(Gold.foil))
@@ -352,7 +469,7 @@ struct ExportCard: View {
             }
         }
         .card(padding: 14)
-        .task(id: pro.unlocked) { if pro.unlocked { files = ledger.exportCSV() } }
+        .task(id: pro.has) { if pro.has { files = ledger.exportCSV() } }
     }
 }
 
@@ -362,19 +479,20 @@ struct ProCard: View {
     var body: some View {
         HStack(spacing: 14) {
             ZStack {
-                Circle().fill(pro.unlocked ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.lacquerHi))
-                Image(systemName: pro.unlocked ? "checkmark" : "lock.fill").font(.body(13, .bold))
-                    .foregroundStyle(pro.unlocked ? AnyShapeStyle(Gold.ink) : AnyShapeStyle(Gold.foil))
+                Circle().fill(pro.has ? AnyShapeStyle(Gold.foil) : AnyShapeStyle(Gold.lacquerHi))
+                Image(systemName: pro.has ? "checkmark" : "lock.fill").font(.body(13, .bold))
+                    .foregroundStyle(pro.has ? AnyShapeStyle(Gold.ink) : AnyShapeStyle(Gold.foil))
             }
             .frame(width: 40, height: 40)
             VStack(alignment: .leading, spacing: 3) {
-                Text(pro.unlocked ? Pro.name : "\(Pro.name), \(pro.price) once").font(.display(17, .medium)).foregroundStyle(Gold.ivory)
-                Text(pro.unlocked ? (pro.grandfathered ? "Unlocked. Thanks for buying the ledger early." : "Unlocked. Thank you.") : ProCopy.short)
+                Text(pro.has ? Pro.name : "\(Pro.name), \(pro.price) once").font(.display(17, .medium)).foregroundStyle(Gold.ivory)
+                Text(pro.unlocked ? (pro.grandfathered ? "Unlocked. Thanks for buying the ledger early." : "Unlocked. Thank you.")
+                     : pro.viaPlus ? "Included with your Plus membership." : ProCopy.short)
                     .font(.body(12)).foregroundStyle(Gold.muted)
                 if let m = pro.message, pro.paywall == nil { Text(m).font(.body(11.5, .semibold)).foregroundStyle(Gold.pale) }
             }
             Spacer(minLength: 6)
-            if !pro.unlocked {
+            if !pro.has {
                 VStack(alignment: .trailing, spacing: 8) {
                     Button { pro.ask(.settings) } label: {
                         Text("SEE").font(.body(12, .bold)).tracking(1.5).foregroundStyle(Gold.ink)

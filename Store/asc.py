@@ -70,12 +70,16 @@ def call(method: str, path: str, body=None, params=None, quiet=False):
         "Authorization": f"Bearer {token()}",
         "Content-Type": "application/json",
     }
-    for attempt in range(3):
+    for attempt in range(10):
         response = requests.request(
             method, url, headers=headers, json=body, params=params, timeout=60
         )
+        # The key is shared by every app's tooling, so the hourly rate limit can trip: wait it out.
+        if response.status_code == 429:
+            time.sleep(min(120, 15 * (attempt + 1)))
+            continue
         # Apple hands out the odd 401 for a valid token; a fresh one goes through.
-        if response.status_code != 401:
+        if response.status_code != 401 or attempt >= 2:
             break
         time.sleep(2)
         headers["Authorization"] = f"Bearer {token()}"

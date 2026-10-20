@@ -1,15 +1,12 @@
-Fairway Ledger is a golf practice journal, scorecard and stat book, finished in black and gold. Free to download, free to log, with one optional Pro unlock and no subscription.
-
-Log your range sessions ball by ball, keep your scorecards hole by hole, and let the numbers tell you where to practise next.
+Fairway Ledger is a golf practice journal, scorecard and stat book, finished in black and gold. Log your range sessions ball by ball, keep your scorecards hole by hole, and let your own numbers tell you where to practise next.
 
 ON THE COURSE
 • Hole-by-hole scorecard: score, putts, tee shot, penalties, greenside bunkers
 • Saved courses: pars, rating and slope fill in by themselves next time
 • 18 holes, front nine or back nine
 • Your round on the Lock Screen and in the Dynamic Island: hole, thru, score to par
-• Close the app mid-round and the card waits for you
 • Greens in regulation, scrambling, sand saves and three-putts worked out for you
-• Handicap Index estimate (World Handicap System style), with your course handicap and net score on every card
+• Handicap index estimate (World Handicap System style), with your course handicap and net score on every card
 
 AT THE RANGE
 • Full swing, wedges, chipping, pitching, bunker, putting or on-course practice
@@ -17,14 +14,21 @@ AT THE RANGE
 • Putting makes and misses by distance, next to the tour's make rate
 • A weekly practice plan built from your own rounds: the clubs, targets and putts that cost you strokes, timed to about an hour
 
+A NEW CHALLENGE EVERY MONTH
+• Zero three-putts, six greens, eight range sessions, a clean card and more
+• Progress tracks itself from what you log, and every finished month earns a medal for your cabinet
+
+WIDGETS, CONTROLS AND SIRI
+• Handicap widget for the Home Screen, the Lock Screen and StandBy
+• Practice widget with buttons that log 15 or 30 minutes without opening the app
+• Control Center buttons to start practice, log a round or add practice time
+• Siri and Shortcuts: "Start practice in Fairway Ledger", "What's my handicap in Fairway Ledger"
+
 YOUR JOURNAL
 • Rate the session, your mood and energy
 • Swing thought, what clicked, what to work on next
 
-HOME SCREEN
-• Handicap widget: your index, last round and this week's practice
-
-FAIRWAY LEDGER PRO (one payment, no subscription)
+FAIRWAY LEDGER PRO (one-time purchase)
 • Score trend across every round
 • Where the strokes go: over par on par 3s, 4s and 5s, penalties and three-putts per round
 • Every course, hole by hole: the holes that cost you and the ones to attack
@@ -32,11 +36,23 @@ FAIRWAY LEDGER PRO (one payment, no subscription)
 • The Ledger widget: your last ten rounds, putts, fairways and greens
 • Export rounds and sessions as spreadsheet files
 
+FAIRWAY LEDGER PLUS (subscription)
+• Everything in Pro
+• Handicap trend with your pace: where your index is heading if you keep going
+• Strokes against your target: an estimate of what driving, approach, short game and putting cost you against typical golfers at the handicap you are aiming for
+• Every colour finish and its matching app icon while you subscribe
+• 5 practice plans and 3 round posters added every month
+• iCloud backup and restore of your whole ledger
+
 EXTRAS, 99 CENTS EACH
-• Practice Plans: three more tailored sessions when the free weekly one isn't enough
+• Practice Plans: three more tailored sessions
 • Round Posters: three gold-leaf scorecards of your rounds to share or frame (your first is free)
-• Finishes: Rose Gold, Platinum, Emerald and Copper re-leaf the app, the widgets and the app icon
+• Finishes: Rose Gold, Platinum, Emerald, Copper and Sapphire re-leaf the app, the widgets and the app icon
 
-Already bought Fairway Ledger before it went free? Pro is unlocked for you automatically.
+PRICES AND TERMS
+Fairway Ledger is free to download and free to log. Pro is a one-time purchase of $4.99. Fairway Ledger Plus is an auto-renewable subscription: $2.99 a month, or $14.99 a year with a one-week free trial for new subscribers. Prices are in US dollars and vary by country. Payment is charged to your Apple ID when you confirm the purchase (for the yearly plan, when the free week ends). The subscription renews automatically unless auto-renew is turned off at least 24 hours before the end of the current period, and your account is charged for renewal within 24 hours before the period ends. Manage or cancel any time in your App Store account settings. Already bought Fairway Ledger before it went free? Pro is unlocked for you automatically.
 
-No account, no ads, no tracking: everything stays on your phone.
+Terms of Use (Apple standard licence agreement): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
+Privacy Policy: https://tensorust.com/apps/fairway-ledger/privacy/
+
+No account, no ads, no tracking: everything stays on your phone, and the Plus backup goes only to your own iCloud.

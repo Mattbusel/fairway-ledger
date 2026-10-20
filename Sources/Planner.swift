@@ -176,7 +176,7 @@ struct PlanCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Eyebrow(extras.freePlanLeft ? "This week's plan · free" : extras.plans > 0 ? "Practice plans · \(extras.plans) banked" : "Practice plans")
+                    Eyebrow(extras.freePlanLeft ? "This week's plan" : extras.plans > 0 ? "Practice plans · \(extras.plans) banked" : "Practice plans")
                     Text(extras.freePlanLeft || extras.plans > 0 ? preview.title : "Another plan this week").font(.display(21, .medium)).foregroundStyle(Gold.ivory)
                 }
                 Spacer()
@@ -189,7 +189,7 @@ struct PlanCard: View {
                     if extras.spendPlan() { router.plan = Planner.make(ledger, variant: extras.plansThisWeek - 1) }
                 }
             } else {
-                Text("This week's free plan is drawn. Each new one leans on the next weakness in your numbers.").font(.body(13.5)).foregroundStyle(Gold.muted)
+                Text("This week's plan is drawn. Each new one leans on the next weakness in your numbers. Plus adds \(Plus.monthlyPlans) plans every month.").font(.body(13.5)).foregroundStyle(Gold.muted)
                     .fixedSize(horizontal: false, vertical: true)
                 FoilButton(extras.busy == Extras.plansID ? "One moment" : "3 more plans · \(extras.price(Extras.plansID))", icon: "plus") {
                     Task {
